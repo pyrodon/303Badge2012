@@ -1,0 +1,45 @@
+[Settings]
+Target=PIC18F67J11
+Active Compiler=BoostC
+Active Directory=C:\Users\dkark\Documents\Altium\WS1\Badge303\BadgeCode\
+Active Config=Debug
+ClockRate=32000000
+Type=0
+Warnings=2
+Model=1
+Last Ext=c
+Profiling=0
+Snapshot=0
+Config=1
+Last ExtIdx=7
+Last Dir=C:\Users\dkark\Documents\Altium\WS1\Badge303\BadgeCode\
+[Files]
+Count=13
+File0=..\..\..\..\..\..\..\Program Files\SourceBoost\include\PIC18F67J11.h
+File1=Badge.h
+File2=BadgePicConfig.h
+File3=main.c
+File4=mcu_initcontrol.c
+File5=sub_sound.c
+File6=ext_chiptune.c
+File7=ext_chiptunesong.h
+File8=MRF49XA.c
+File9=MRF49XA.h
+File10=ETOH-Driver.c
+File11=POV_Test.c
+File12=SerialPort.c
+[Tools]
+BoostDir=C:\Program Files\SourceBoost\
+Programmer=
+PrefixWithBuildThreadNum=0
+BuildThreadNum=1
+[Debugger]
+DebugFromMain=0
+[Watch]
+Count=0
+[Watchpoint]
+Count=0
+[Tool State]
+compile=1
+link=1
+program=0
