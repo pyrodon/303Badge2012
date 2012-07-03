@@ -14,7 +14,7 @@ Config=1
 Last ExtIdx=7
 Last Dir=C:\Users\dkark\Documents\Altium\WS1\Badge303\BadgeCode\
 [Files]
-Count=13
+Count=14
 File0=..\..\..\..\..\..\..\Program Files\SourceBoost\include\PIC18F67J11.h
 File1=Badge.h
 File2=BadgePicConfig.h
@@ -28,6 +28,7 @@ File9=MRF49XA.h
 File10=ETOH-Driver.c
 File11=POV_Test.c
 File12=SerialPort.c
+File13=sub_lights.c
 [Tools]
 BoostDir=C:\Program Files\SourceBoost\
 Programmer=

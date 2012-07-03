@@ -162,6 +162,25 @@ extern void usb_ser_init();
 extern void usb_putchar(unsigned char);
 unsigned char usb_getchar(char *ch);
 
+// sub_lights.c
+
+extern void light_init();
+extern void light_set(unsigned char, unsigned char, unsigned char, unsigned char);
+extern void light_pause();
+extern void light_play(); 
+extern void light_intr(); 
+extern void light_show(unsigned char , unsigned char );
+extern void light_animate(unsigned char );
+#define NUMLIGHTS 7
+#define MAXLIGHTPHASE 23
+#define NUMINTENSITY  8
+#define LIGHTSHOW_OFF	0
+#define LIGHTSHOW_CEYLON 1
+#define LIGHTSHOW_RGWAVE 2
+#define LIGHTSHOW_COUNTDOWN 3
+#define LIGHTSHOW_RAINBOW 4
+#define LIGHTSHOW_DONGS 5
+
 
 //
 // Flash LED Macro (for debugging purposes)

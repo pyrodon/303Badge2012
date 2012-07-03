@@ -49,9 +49,9 @@ void sound_config_polled()
 	sound_wait_poll();
 	
 	// Turn Amp On
-	delay_ms(10);
-	sound_amp_on();
-	delay_ms(10);
+	//delay_ms(10);
+	//sound_amp_on();
+	//delay_ms(10);
 
 	
 }

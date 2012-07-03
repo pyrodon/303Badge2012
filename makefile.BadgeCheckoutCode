@@ -5,34 +5,37 @@ Debug:
 
 CC = "C:\Program Files\SourceBoost\boostc_pic18.exe"
 
-Debug\main.obj: main.c BadgePicConfig.h Badge.h MRF49XA.h
+Debug\main.obj: main.c BadgePicConfig.h Badge.h MRF49XA.h BadgeCheckoutCode.Debug.__f
 	$(CC) main.c -t PIC18F67J11  -idx 2 -W2 -obj Debug -d _DEBUG
 
-Debug\mcu_initcontrol.obj: mcu_initcontrol.c Badge.h
+Debug\mcu_initcontrol.obj: mcu_initcontrol.c Badge.h BadgeCheckoutCode.Debug.__f
 	$(CC) mcu_initcontrol.c -t PIC18F67J11  -idx 2 -W2 -obj Debug -d _DEBUG
 
-Debug\sub_sound.obj: sub_sound.c Badge.h
+Debug\sub_sound.obj: sub_sound.c Badge.h BadgeCheckoutCode.Debug.__f
 	$(CC) sub_sound.c -t PIC18F67J11  -idx 2 -W2 -obj Debug -d _DEBUG
 
-Debug\ext_chiptune.obj: ext_chiptune.c Badge.h ext_chiptunesong.h
+Debug\ext_chiptune.obj: ext_chiptune.c Badge.h ext_chiptunesong.h BadgeCheckoutCode.Debug.__f
 	$(CC) ext_chiptune.c -t PIC18F67J11  -idx 2 -W2 -obj Debug -d _DEBUG
 
-Debug\MRF49XA.obj: MRF49XA.c MRF49XA.h Badge.h
+Debug\MRF49XA.obj: MRF49XA.c MRF49XA.h Badge.h BadgeCheckoutCode.Debug.__f
 	$(CC) MRF49XA.c -t PIC18F67J11  -idx 2 -W2 -obj Debug -d _DEBUG
 
-Debug\ETOH-Driver.obj: ETOH-Driver.c Badge.h
+Debug\ETOH-Driver.obj: ETOH-Driver.c Badge.h BadgeCheckoutCode.Debug.__f
 	$(CC) ETOH-Driver.c -t PIC18F67J11  -idx 2 -W2 -obj Debug -d _DEBUG
 
-Debug\POV_Test.obj: POV_Test.c Badge.h
+Debug\POV_Test.obj: POV_Test.c Badge.h BadgeCheckoutCode.Debug.__f
 	$(CC) POV_Test.c -t PIC18F67J11  -idx 2 -W2 -obj Debug -d _DEBUG
 
-Debug\SerialPort.obj: SerialPort.c Badge.h
+Debug\SerialPort.obj: SerialPort.c Badge.h BadgeCheckoutCode.Debug.__f
 	$(CC) SerialPort.c -t PIC18F67J11  -idx 2 -W2 -obj Debug -d _DEBUG
+
+Debug\sub_lights.obj: sub_lights.c Badge.h BadgeCheckoutCode.Debug.__f
+	$(CC) sub_lights.c -t PIC18F67J11  -idx 2 -W2 -obj Debug -d _DEBUG
 
 LD = "C:\Program Files\SourceBoost\boostlink_pic.exe"
 
-Debug\BadgeCheckoutCode.hex: Debug\main.obj Debug\mcu_initcontrol.obj Debug\sub_sound.obj Debug\ext_chiptune.obj Debug\MRF49XA.obj Debug\ETOH-Driver.obj Debug\POV_Test.obj Debug\SerialPort.obj 
-	$(LD)  -idx 2  /ld "C:\Program Files\SourceBoost\lib\large" libc.pic18.lib Debug\main.obj Debug\mcu_initcontrol.obj Debug\sub_sound.obj Debug\ext_chiptune.obj Debug\MRF49XA.obj Debug\ETOH-Driver.obj Debug\POV_Test.obj Debug\SerialPort.obj /t PIC18F67J11 /d "Debug" /p BadgeCheckoutCode
+Debug\BadgeCheckoutCode.hex: Debug\main.obj Debug\mcu_initcontrol.obj Debug\sub_sound.obj Debug\ext_chiptune.obj Debug\MRF49XA.obj Debug\ETOH-Driver.obj Debug\POV_Test.obj Debug\SerialPort.obj Debug\sub_lights.obj 
+	$(LD)  -idx 2  /ld "C:\Program Files\SourceBoost\lib\large" libc.pic18.lib Debug\main.obj Debug\mcu_initcontrol.obj Debug\sub_sound.obj Debug\ext_chiptune.obj Debug\MRF49XA.obj Debug\ETOH-Driver.obj Debug\POV_Test.obj Debug\SerialPort.obj Debug\sub_lights.obj /t PIC18F67J11 /d "Debug" /p BadgeCheckoutCode
 
 all: Debug Debug\BadgeCheckoutCode.hex
 
@@ -45,6 +48,7 @@ clean:
 	@if exist Debug\ETOH-Driver.obj del Debug\ETOH-Driver.obj
 	@if exist Debug\POV_Test.obj del Debug\POV_Test.obj
 	@if exist Debug\SerialPort.obj del Debug\SerialPort.obj
+	@if exist Debug\sub_lights.obj del Debug\sub_lights.obj
 	@if exist Debug\BadgeCheckoutCode.hex del Debug\BadgeCheckoutCode.hex
 	@if exist Debug\BadgeCheckoutCode.asm del Debug\BadgeCheckoutCode.asm
 	@if exist Debug\BadgeCheckoutCode.lst del Debug\BadgeCheckoutCode.lst

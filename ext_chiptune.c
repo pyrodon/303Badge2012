@@ -587,6 +587,31 @@ void tune_init()
 	initresources();
 }
 
+void tune_startsong(unsigned char songnum)
+{
+	sound_amp_on();
+}
+
+void tune_songwork()
+{
+	if(timetoplay) {
+		timetoplay--;
+	}
+	playroutine();
+	
+	if(playsong) return;
+	osc[0].volume = 0;
+	channel[0].inum = 0;
+	osc[1].volume = 0;
+	channel[1].inum = 0;
+	osc[2].volume = 0;
+	channel[2].inum = 0;
+	osc[3].volume = 0;
+	channel[3].inum = 0;
+	sound_hsstop();
+	sound_amp_off();
+}
+
 
 void tune_playsong()
 {
@@ -597,7 +622,7 @@ void tune_playsong()
 		timetoplay--;
 		playroutine();
 	}
-		osc[0].volume = 0;
+	osc[0].volume = 0;
 	channel[0].inum = 0;
 	osc[1].volume = 0;
 	channel[1].inum = 0;

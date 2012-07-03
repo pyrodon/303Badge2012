@@ -1,16 +1,21 @@
 #include <system.h>
 #include "BadgePicConfig.h"
 #include "Badge.h"
-#include "MRF49XA.h"
+#include "MRF49XA.h" 
 
 
+unsigned long elapsed_msecs = 0;			// Total elapsed time in seconds
+unsigned char loop_msecs = 0;		        //
+
+volatile unsigned char intr_intfreq;		// 1-up counter every time through intr routine
+volatile unsigned char intr_msecs;
 
 
 #define DELAYMS	20 
 
 void main()
 {
-	unsigned char i, retchar;
+	unsigned char i, j, intensity, retchar;
 	unsigned char loopcnt = 0, etoh_first = 1;
 	unsigned short soundcount;
 	unsigned short etoh_start, etoh_end, etoh_diff;
@@ -18,6 +23,8 @@ void main()
 	unsigned long autocountdown = 0x20000;
 	
 	unsigned char rfrxdata=1, rfrxlen=1, rftxdata=1; 
+	
+	unsigned char cur_msecs; 
 
 	//
 	// Core Hardware Initialization
@@ -27,7 +34,7 @@ void main()
 	mcu_initialize();	// Initialize MCU resources and 8KHz interrupt...
 	
 	
-	sound_config_polled(); 		// Configure the sound subsystem chip, amp on
+	sound_config_polled(); 		// Configure the sound subsystem chip
 	
 	// Enable Global Interrupts
 	set_bit(intcon, GIE);	// Use Interrupts. ISR is interrupt(), below
@@ -35,17 +42,62 @@ void main()
 
 	
 	//init_etoh();
-	porta.SIG_RA_ETOH_HTR_N_O = 1; // Turn off Heater
+	//porta.SIG_RA_ETOH_HTR_N_O = 1; // Turn off Heater
 
 	
 	
 	MRF49XA_Init();
 	usb_ser_init();
+	
+	// 
+	// Main Worker Loop
+	//
 
 
+	
+	light_show(LIGHTSHOW_RAINBOW, 3);
+	
+	while(1) {
+		//
+		// Handle the elapsed time clocks
+		//
+		clear_bit(intcon, TMR0IE);
+		loop_msecs = intr_msecs; // Take copy to avoid race conditions
+		intr_msecs = 0;
+		set_bit(intcon, TMR0IE);
+		
+		elapsed_msecs += loop_msecs; // May remove.. Ideally pass the current loop msecs into 
+									 // state machine so they can do their own timing, but keep for now
+									 
+		light_animate(loop_msecs);
+									 
+		
+	}	
+	
+	
+	
+	//
+	// Testing Light Show
+	//
+	
 
-	tune_init();
-	tune_playsong();
+
+	for(i=0; i < NUMLIGHTS; i++) {
+		light_set(i, i, NUMLIGHTS-1-i, 0);
+	}
+	while(1);
+	
+
+
+	      
+	   	   
+
+	
+
+
+    
+//	tune_init();
+//	tune_playsong();
 	
     while(1) {
        led_pov_next(LED_SHOW_AUTO);
@@ -144,13 +196,16 @@ static unsigned char soundval = 0;
 
 void interrupt( void ) 
 {
-	if(test_bit(intcon, TMR0IF)) {
+	if(test_bit(intcon, TMR0IF)) {  // 8 KHz driven interrupt events
 		clear_bit(intcon, TMR0IE);
 		tmr0l = TIMER_REGVAL;
-		portf.6 = 1;  
-		//delay_10us(2);
+		intr_intfreq++;
+		if(intr_intfreq == 8) {  // Convert HZ rate to msecs
+			intr_intfreq = 0;
+			intr_msecs++;		// Rolling msec counter (wraps every 65K seconds)
+		}
+		light_intr();
 		tune_play_intr();
-		portf.6 = 0;
 		clear_bit(intcon,TMR0IF);
 		set_bit(intcon, TMR0IE);
 	}	
