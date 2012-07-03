@@ -181,6 +181,10 @@ extern void light_animate(unsigned char );
 #define LIGHTSHOW_RAINBOW 4
 #define LIGHTSHOW_DONGS 5
 
+// sub_sample.c
+extern void sample_play();
+extern void sample_intr();
+
 
 //
 // Flash LED Macro (for debugging purposes)

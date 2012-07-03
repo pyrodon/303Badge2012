@@ -615,6 +615,7 @@ void tune_songwork()
 
 void tune_playsong()
 {
+	sound_amp_on();
 	sound_hsstart();
 	for(;playsong;) {
 		while(!timetoplay);
@@ -631,4 +632,5 @@ void tune_playsong()
 	osc[3].volume = 0;
 	channel[3].inum = 0;
 	sound_hsstop();
+	sound_amp_off();
 }
