@@ -4,6 +4,8 @@
 #include "MRF49XA.h" 
 
 
+
+
 unsigned long elapsed_msecs = 0;			// Total elapsed time in seconds
 unsigned char loop_msecs = 0;		        //
 
@@ -18,8 +20,7 @@ void main()
 	unsigned char i, j, intensity, retchar;
 	unsigned char loopcnt = 0, etoh_first = 1;
 	unsigned short soundcount;
-	unsigned short etoh_start, etoh_end, etoh_diff;
-	unsigned short avg_accum = 0, etoh_lastdiff;
+
 	unsigned long autocountdown = 0x20000;
 	
 	unsigned char rfrxdata=1, rfrxlen=1, rftxdata=1; 
@@ -44,10 +45,9 @@ void main()
 	//init_etoh();
 	//porta.SIG_RA_ETOH_HTR_N_O = 1; // Turn off Heater
 
-	
-	
+	etoh_init();
 	MRF49XA_Init();
-	usb_ser_init();
+	usb_ser_init(); 
 	
 	// 
 	// Main Worker Loop
@@ -57,6 +57,13 @@ void main()
 	
 	light_show(LIGHTSHOW_RAINBOW, 3);
 	sample_play();
+	delay_s(2);
+	
+	tune_init();
+	tune_playsong();
+	
+	
+	//etoh_breathtest(ETOH_START, 0 );
 	
 	while(1) {
 		//
@@ -71,6 +78,7 @@ void main()
 									 // state machine so they can do their own timing, but keep for now
 									 
 		light_animate(loop_msecs);
+		etoh_breathtest(ETOH_DOWORK,  loop_msecs );
 									 
 		
 	}	
@@ -132,6 +140,7 @@ void main()
 	   }
 	   
 	   if(!portf.SIG_RF_AUXBUT_N_I) {
+#ifdef NEVER
 			led_showbin(0,0);
 			portb.SIG_RB_DISPLED3_O = 1;
 			portc.SIG_RC_DISP_RED_O = 0; // Red light for 10 seconds to allow sensor to head
@@ -142,7 +151,7 @@ void main()
 			
 			portc.SIG_RC_DISP_RED_O = 1; // Red light for 10 seconds to allow sensor to head
 			portc.SIG_RC_DISP_GRN_O = 0; // Grean light means play
-			
+		
 		    etoh_start = get_etoh();
 		    
 		    for(soundcount=0; soundcount < 8000; soundcount++) {
@@ -176,6 +185,7 @@ void main()
 			porta.SIG_RA_ETOH_HTR_N_O = 1; // Turn off Heater
 			portc.SIG_RC_DISP_GRN_O = 1;
 			portb.SIG_RB_DISPLED3_O = 0;
+#endif
 		}
     }
 	

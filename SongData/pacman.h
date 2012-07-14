@@ -1,0 +1,8 @@
+#define MAXTRACK_PACMAN	0x01
+#define SONGLEN_PACMAN		0x01
+
+#define SONGDATA_PACMAN 0x6000
+#pragma DATA SONGDATA_PACMAN,
+#include "pacman.x"
+
+#define DATALEN_PACMAN 99

@@ -1,7 +1,7 @@
 [Settings]
 Target=PIC18F67J11
 Active Compiler=BoostC
-Active Directory=C:\Users\dkark\Documents\GitHub\303Badge2012\Samples\
+Active Directory=C:\Users\dkark\Documents\GitHub\303Badge2012\
 Active Config=Debug
 ClockRate=32000000
 Type=0

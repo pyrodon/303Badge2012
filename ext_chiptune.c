@@ -24,6 +24,9 @@ u8 trackpos;
 u8 playsong;
 u8 songpos;
 
+unsigned long SongAddress = 0;
+
+
 
 u8 light[2];
 
@@ -359,12 +362,12 @@ void playroutine() {			// called at 50 Hz
 		}
 	}
 
-	for(ch = 0, cptr=&channel[0]; ch < 4; ch++) {
+	for(ch = 0, cptr=&channel[0]; ch < 4; ch++) { // ***
 		s16 vol;
 		u16 duty;
 		u16 slur;
 
-		while(cptr->inum && !channel[ch].iwait) {
+		while(cptr->inum && !cptr->iwait) {
 			u8 il[2];
 
 			readinstr(cptr->inum, cptr->iptr & 0xff, il);

@@ -25,7 +25,7 @@ void sample_play()
 void sample_intr()
 {
 	static unsigned char lastsample = 0x80;
-	static unsigned short address;
+	static unsigned long address;
 
 	
 	if(!playsample) return;
@@ -41,7 +41,7 @@ void sample_intr()
  
     asm 
     {
-	MOVLW	0x00
+	MOVF _address + 2, W
 	MOVWF _tblptru
 	MOVF _address + 1, W
 	MOVWF _tblptrh

@@ -140,8 +140,15 @@ void tune_playsong();
 
 //
 //
-extern void init_etoh();
-extern unsigned short get_etoh();
+extern void etoh_init();
+extern unsigned short etoh_get();
+extern unsigned char etoh_breathtest(unsigned char , unsigned char );
+#define ETOH_START 1			// Commands
+#define ETOH_KILL 2
+#define ETOH_DOWORK 0
+
+#define ETOH_WORKING 1			// Machine Status
+#define ETOH_DONE    0 
 
 // 
 // POV module

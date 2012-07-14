@@ -1,7 +1,7 @@
 
 #define TRACKLEN 32
 
-#define SONG_LINUS
+#define SONG_303
 
 #ifdef SONG_ORIG
 #define MAXTRACK	0x10
@@ -2516,3 +2516,11 @@
 0x01,
 0x00
 #endif // SONG_CACTUS
+
+#ifdef SONG_303
+#include "SongData/dying.h"
+
+#define MAXTRACK MAXTRACK_DYING
+#define SONGLEN SONGLEN_DYING
+#define SONGDATA SONGDATA_DYING
+#endif
