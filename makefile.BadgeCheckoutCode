@@ -14,7 +14,7 @@ Debug\mcu_initcontrol.obj: mcu_initcontrol.c Badge.h BadgeCheckoutCode.Debug.__f
 Debug\sub_sound.obj: sub_sound.c Badge.h BadgeCheckoutCode.Debug.__f
 	$(CC) sub_sound.c -t PIC18F67J11  -idx 2 -W2 -obj Debug -d _DEBUG
 
-Debug\ext_chiptune.obj: ext_chiptune.c Badge.h ext_chiptunesong.h SongData\dying.h SongData\dying.x BadgeCheckoutCode.Debug.__f
+Debug\ext_chiptune.obj: ext_chiptune.c Badge.h ext_chiptunesong.h SongData\cantina.h SongData\cantina.x BadgeCheckoutCode.Debug.__f
 	$(CC) ext_chiptune.c -t PIC18F67J11  -idx 2 -W2 -obj Debug -d _DEBUG
 
 Debug\MRF49XA.obj: MRF49XA.c MRF49XA.h Badge.h BadgeCheckoutCode.Debug.__f

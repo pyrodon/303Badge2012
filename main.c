@@ -55,9 +55,9 @@ void main()
 
 
 	
-	light_show(LIGHTSHOW_RAINBOW, 3);
-	sample_play();
-	delay_s(2);
+	//light_show(LIGHTSHOW_RAINBOW, 3);
+	//sample_play();
+	//delay_s(2);
 	
 	tune_init();
 	tune_playsong();
@@ -215,8 +215,8 @@ void interrupt( void )
 			intr_intfreq = 0;
 			intr_msecs++;		// Rolling msec counter (wraps every 65K seconds)
 		}
-		sample_intr();
-		light_intr();
+		//sample_intr();
+		//light_intr();
 		tune_play_intr();
 		clear_bit(intcon,TMR0IF);
 		set_bit(intcon, TMR0IE);

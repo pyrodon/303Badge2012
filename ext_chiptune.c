@@ -286,9 +286,10 @@ void playroutine() {			// called at 50 Hz
 					if(songpos >= SONGLEN) {
 						playsong = 0;
 					} else {
-						for(ch = 0, cptr=&channel[0]; ch < 4; ch++) {
+						for(ch = 0; ch < 4; ch++) {
 							u8 gottransp;
 							u8 transp;
+							cptr = &channel[ch];
 
 							gottransp = readchunk(&songup, 1) & 0xff; // DK (s8)
 							cptr->tnum = readchunk(&songup, 6) & 0xff;
@@ -302,7 +303,7 @@ void playroutine() {			// called at 50 Hz
 							if(cptr->tnum) {
 								initup(&channel[ch].trackup, resources[16 + cptr->tnum - 1]);
 							}
-							cptr++;
+							//cptr++;
 						}
 						songpos++;
 					}
@@ -310,7 +311,8 @@ void playroutine() {			// called at 50 Hz
 			}
 
 			if(playsong) {
-				for(ch = 0, cptr=&channel[0]; ch < 4; ch++) {
+				for(ch = 0; ch < 4; ch++) {
+				    cptr=&channel[ch];
 					if(cptr->tnum) {
 						u8 note, instr, cmd, param;
 						u8 fields;
@@ -353,7 +355,7 @@ void playroutine() {			// called at 50 Hz
 						}
 						if(cmd) runcmd(ch, cmd, param);
 					}
-					cptr++;
+					//cptr++;
 				}
 
 				trackpos++;
@@ -531,7 +533,8 @@ void tune_play_intr()		// called at 8 KHz
 	}
 
 	acc = 0;
-	for(i = 0, optr = &osc[0]; i < 4; i++) {  // i < 4 ORIG
+	for(i = 0; i < 4; i++) {  // i < 4 ORIG
+	     optr = &osc[i];
 
 
 		switch(osc[i].waveform) {
@@ -563,7 +566,7 @@ void tune_play_intr()		// called at 8 KHz
 		// with it withouth the cast - DK
 		acc += (s16) value  *  (u8) optr->volume; // rhs = [-8160,7905]
 		//acc += (u8) (value) * (u8) osc[i].volume; // rhs = [-8160,7905]
-		optr++;
+		//optr++;
 	}
 	// acc [-32640,31620]
 	lastsample = (128 + (acc >> 8));	// [1,251]
