@@ -1,7 +1,7 @@
 #define MAXTRACK_RAINING	0x0a
 #define SONGLEN_RAINING		0x08
 
-#define SONGDATA_RAINING  0x6000
+#define SONGDATA_RAINING  0x1D920
 #pragma DATA SONGDATA_RAINING,
 #include "raining.x"
 

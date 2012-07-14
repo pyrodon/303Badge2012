@@ -2,6 +2,7 @@
 #include "BadgePicConfig.h"
 #include "Badge.h"
 #include "MRF49XA.h" 
+#include "ext_chiptunesong.h"
 
 
 
@@ -53,14 +54,18 @@ void main()
 	// Main Worker Loop
 	//
 
-
+	for (i=1; i <= 20; i++) {
 	
-	//light_show(LIGHTSHOW_RAINBOW, 3);
-	//sample_play();
-	//delay_s(2);
-	
-	tune_init();
-	tune_playsong();
+		songselect(i);
+		
+		//light_show(LIGHTSHOW_RAINBOW, 3);
+		//sample_play();
+		//delay_s(2);
+		
+		tune_init();
+		tune_playsong();
+		delay_s(1);
+	}
 	
 	
 	//etoh_breathtest(ETOH_START, 0 );

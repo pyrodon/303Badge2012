@@ -5,7 +5,7 @@ Debug:
 
 CC = "C:\Program Files\SourceBoost\boostc_pic18.exe"
 
-Debug\main.obj: main.c BadgePicConfig.h Badge.h MRF49XA.h BadgeCheckoutCode.Debug.__f
+Debug\main.obj: main.c BadgePicConfig.h Badge.h MRF49XA.h ext_chiptunesong.h BadgeCheckoutCode.Debug.__f
 	$(CC) main.c -t PIC18F67J11  -idx 2 -W2 -obj Debug -d _DEBUG
 
 Debug\mcu_initcontrol.obj: mcu_initcontrol.c Badge.h BadgeCheckoutCode.Debug.__f
@@ -14,7 +14,7 @@ Debug\mcu_initcontrol.obj: mcu_initcontrol.c Badge.h BadgeCheckoutCode.Debug.__f
 Debug\sub_sound.obj: sub_sound.c Badge.h BadgeCheckoutCode.Debug.__f
 	$(CC) sub_sound.c -t PIC18F67J11  -idx 2 -W2 -obj Debug -d _DEBUG
 
-Debug\ext_chiptune.obj: ext_chiptune.c Badge.h ext_chiptunesong.h SongData\cantina.h SongData\cantina.x BadgeCheckoutCode.Debug.__f
+Debug\ext_chiptune.obj: ext_chiptune.c Badge.h ext_chiptunesong.h BadgeCheckoutCode.Debug.__f
 	$(CC) ext_chiptune.c -t PIC18F67J11  -idx 2 -W2 -obj Debug -d _DEBUG
 
 Debug\MRF49XA.obj: MRF49XA.c MRF49XA.h Badge.h BadgeCheckoutCode.Debug.__f
@@ -35,10 +35,13 @@ Debug\sub_lights.obj: sub_lights.c Badge.h BadgeCheckoutCode.Debug.__f
 Debug\sub_samples.obj: sub_samples.c Badge.h Samples\d2.h BadgeCheckoutCode.Debug.__f
 	$(CC) sub_samples.c -t PIC18F67J11  -idx 2 -W2 -obj Debug -d _DEBUG
 
+Debug\ext_chiptune_songsel.obj: ext_chiptune_songsel.c Badge.h ext_chiptunesong.h SongData\303.h SongData\303.x SongData\buzzer.h SongData\buzzer.x SongData\cactus.h SongData\cactus.x SongData\cantina.h SongData\cantina.x SongData\chirp1.h SongData\chirp1.x SongData\chirp2.h SongData\chirp2.x SongData\dying.h SongData\dying.x SongData\journey1.h SongData\journey1.x SongData\journey2.h SongData\journey2.x SongData\journey3.h SongData\journey3.x SongData\klaxon.h SongData\klaxon.x SongData\kry0.h SongData\kry0.x SongData\nyan.h SongData\nyan.x SongData\orig.h SongData\orig.x SongData\pacman.h SongData\pacman.x SongData\pewpew.h SongData\pewpew.x SongData\raining.h SongData\raining.x SongData\ricktroll.h SongData\ricktroll.x SongData\secret.h SongData\secret.x SongData\siren.h SongData\siren.x BadgeCheckoutCode.Debug.__f
+	$(CC) ext_chiptune_songsel.c -t PIC18F67J11  -idx 2 -W2 -obj Debug -d _DEBUG
+
 LD = "C:\Program Files\SourceBoost\boostlink_pic.exe"
 
-Debug\BadgeCheckoutCode.hex: Debug\main.obj Debug\mcu_initcontrol.obj Debug\sub_sound.obj Debug\ext_chiptune.obj Debug\MRF49XA.obj Debug\ETOH-Driver.obj Debug\POV_Test.obj Debug\SerialPort.obj Debug\sub_lights.obj Debug\sub_samples.obj 
-	$(LD)  -idx 2  /ld "C:\Program Files\SourceBoost\lib\large" libc.pic18.lib Debug\main.obj Debug\mcu_initcontrol.obj Debug\sub_sound.obj Debug\ext_chiptune.obj Debug\MRF49XA.obj Debug\ETOH-Driver.obj Debug\POV_Test.obj Debug\SerialPort.obj Debug\sub_lights.obj Debug\sub_samples.obj /t PIC18F67J11 /d "Debug" /p BadgeCheckoutCode
+Debug\BadgeCheckoutCode.hex: Debug\main.obj Debug\mcu_initcontrol.obj Debug\sub_sound.obj Debug\ext_chiptune.obj Debug\MRF49XA.obj Debug\ETOH-Driver.obj Debug\POV_Test.obj Debug\SerialPort.obj Debug\sub_lights.obj Debug\sub_samples.obj Debug\ext_chiptune_songsel.obj 
+	$(LD)  -idx 2  /ld "C:\Program Files\SourceBoost\lib\large" libc.pic18.lib Debug\main.obj Debug\mcu_initcontrol.obj Debug\sub_sound.obj Debug\ext_chiptune.obj Debug\MRF49XA.obj Debug\ETOH-Driver.obj Debug\POV_Test.obj Debug\SerialPort.obj Debug\sub_lights.obj Debug\sub_samples.obj Debug\ext_chiptune_songsel.obj /t PIC18F67J11 /d "Debug" /p BadgeCheckoutCode
 
 all: Debug Debug\BadgeCheckoutCode.hex
 
@@ -53,6 +56,7 @@ clean:
 	@if exist Debug\SerialPort.obj del Debug\SerialPort.obj
 	@if exist Debug\sub_lights.obj del Debug\sub_lights.obj
 	@if exist Debug\sub_samples.obj del Debug\sub_samples.obj
+	@if exist Debug\ext_chiptune_songsel.obj del Debug\ext_chiptune_songsel.obj
 	@if exist Debug\BadgeCheckoutCode.hex del Debug\BadgeCheckoutCode.hex
 	@if exist Debug\BadgeCheckoutCode.asm del Debug\BadgeCheckoutCode.asm
 	@if exist Debug\BadgeCheckoutCode.lst del Debug\BadgeCheckoutCode.lst

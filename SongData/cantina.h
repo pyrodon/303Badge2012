@@ -1,7 +1,7 @@
 #define MAXTRACK_CANTINA	0x1a
 #define SONGLEN_CANTINA		0x08
 
-#define SONGDATA_CANTINA 0xc000
+#define SONGDATA_CANTINA 0x1BE60
 
 #pragma DATA SONGDATA_CANTINA, 
 #include "cantina.x"

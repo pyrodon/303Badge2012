@@ -4,6 +4,7 @@
 #include "ext_chiptunesong.h" 
 
 
+#define TRACKLEN 32
 
 typedef unsigned char u8;
 typedef unsigned short u16;
@@ -153,14 +154,14 @@ return(rnd_c);          //low order bits of other variables
 
 u8 readsongbyte(u16 offset)
 {
-    u16 address;
+    unsigned long address;
     u8 result;
     
-    address = SONGDATA + offset;
+    address = SongSelAddr + offset;
  
     asm 
     {
-	MOVLW	0x00
+	MOVF _address + 2, W
 	MOVWF _tblptru
 	MOVF _address + 1, W
 	MOVWF _tblptrh
@@ -283,7 +284,7 @@ void playroutine() {			// called at 50 Hz
 
 			if(!trackpos) {
 				if(playsong) {
-					if(songpos >= SONGLEN) {
+					if(songpos >= SongSelSongLen) {
 						playsong = 0;
 					} else {
 						for(ch = 0; ch < 4; ch++) {
@@ -458,7 +459,7 @@ void initresources() {
 	struct unpacker up;
 
 	initup(&up, 0);
-	for(i = 0; i < 16 + MAXTRACK; i++) {
+	for(i = 0; i < 16 + SongSelMaxTrack; i++) {
 		resources[i] = readchunk(&up, 13);
 	}
 
@@ -569,7 +570,7 @@ void tune_play_intr()		// called at 8 KHz
 		//optr++;
 	}
 	// acc [-32640,31620]
-	lastsample = (128 + (acc >> 8));	// [1,251]
+	lastsample = (128 + (s8)(acc >> 8));	// [1,251] (DK- Was >> 8)
 	//lastsample =  (acc >> 8);	// [1,251]
 }
 
@@ -596,6 +597,7 @@ void tune_init()
 void tune_startsong(unsigned char songnum)
 {
 	sound_amp_on();
+	sound_hsstart();
 }
 
 void tune_songwork()

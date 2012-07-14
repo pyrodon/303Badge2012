@@ -1,7 +1,7 @@
 #define MAXTRACK_JOURNEY1	0x1b
 #define SONGLEN_JOURNEY1		0x0a
 
-#define SONGDATA_JOURNEY1	0x6000
+#define SONGDATA_JOURNEY1	0x1C2E0
 #pragma DATA SONGDATA_JOURNEY1,
 #include "journey1.x"
 
