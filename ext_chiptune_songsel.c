@@ -31,10 +31,12 @@ unsigned char SongSelSongLen;
 unsigned char SongSelRateVal;
 unsigned char SongSelXtraVol;
 
-#define CASESEL( ix ) case SONG_##ix##: \
+#define CASESEL( ix , r, v ) case SONG_##ix##: \
                         SongSelAddr = SONGDATA_##ix##; \
                         SongSelMaxTrack = MAXTRACK_##ix##; \
                         SongSelSongLen = SONGLEN_##ix##; \
+                        SongSelRateVal = (r) ; \
+                        SongSelXtraVol = (v); \
                         break 
                         
                         
@@ -43,30 +45,32 @@ unsigned char SongSelXtraVol;
 void songselect(unsigned char songix)
 {
 	switch(songix) {
-	  CASESEL(SIREN);
-	  CASESEL(SECRET);
-	  CASESEL(RICK);
-	  CASESEL(RAINING);
-	  CASESEL(PEWPEW);
-	  CASESEL(PACMAN);
-	  CASESEL(ORIG);
-	  CASESEL(NYAN);
-	  CASESEL(KRY0);
-	  CASESEL(KLAXON);
-	  CASESEL(JOURNEY3);
-	  CASESEL(JOURNEY2);
-	  CASESEL(JOURNEY1);
-	  CASESEL(DYING);
-	  CASESEL(CHIRP2);
-	  CASESEL(CHIRP1);
-	  CASESEL(CANTINA);
-	  CASESEL(CACTUS);
-	  CASESEL(BUZZER);
-	  CASESEL(303);
+	  CASESEL(SIREN, 93, 7);
+	  CASESEL(SECRET, 93, 7);
+	  CASESEL(RICK, 93, 7);
+	  CASESEL(RAINING, 93, 8);
+	  CASESEL(PEWPEW, 93, 7);
+	  CASESEL(PACMAN, 93, 7);
+	  CASESEL(ORIG, 103, 8);
+	  CASESEL(NYAN, 95, 8);
+	  CASESEL(KRY0, 93, 8);
+	  CASESEL(KLAXON, 93, 7);
+	  CASESEL(JOURNEY3, 93, 7);
+	  CASESEL(JOURNEY2, 93, 7);
+	  CASESEL(JOURNEY1, 93, 7);
+	  CASESEL(DYING, 93, 7);
+	  CASESEL(CHIRP2, 93, 6);
+	  CASESEL(CHIRP1, 93, 6);
+	  CASESEL(CANTINA, 93, 7);
+	  CASESEL(CACTUS, 95, 7);
+	  CASESEL(BUZZER, 93, 7);
+	  CASESEL(303, 93, 7);
 	  default:
 	     SongSelAddr = SONGDATA_303;
 	     SongSelMaxTrack = MAXTRACK_303;
 	     SongSelSongLen = SONGLEN_303;
+		 SongSelRateVal = 93 ; 
+		SongSelXtraVol = 7; 
 	     break;
 	}
 }

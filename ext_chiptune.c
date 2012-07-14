@@ -529,8 +529,8 @@ void tune_play_intr()		// called at 8 KHz
 	if(callbackwait) {
 		callbackwait--;
 	} else {
-		timetoplay++;
-		callbackwait = 93;
+		timetoplay=1;
+		callbackwait = SongSelRateVal;
 	}
 
 	acc = 0;
@@ -570,7 +570,7 @@ void tune_play_intr()		// called at 8 KHz
 		//optr++;
 	}
 	// acc [-32640,31620]
-	lastsample = (128 + (s8)(acc >> 8));	// [1,251] (DK- Was >> 8)
+	lastsample = (128 + (s8)(acc >> SongSelXtraVol));	// [1,251] (DK- Was >> 8)
 	//lastsample =  (acc >> 8);	// [1,251]
 }
 
@@ -596,15 +596,28 @@ void tune_init()
 
 void tune_startsong(unsigned char songnum)
 {
+	playsong = 0;		// Terminate any other playing song
+	
+	songselect(songnum);  // Select the right song
+	tune_init();
+	
 	sound_amp_on();
+	delay_10us(10);
+	sound_i2c_reset();
+	delay_10us(5);
+	sound_i2c_reset();
+	delay_10us(5);
 	sound_hsstart();
 }
 
 void tune_songwork()
 {
-	if(timetoplay) {
-		timetoplay--;
+	if(!playsong) return;
+	
+	if(!timetoplay) {
+		return;
 	}
+	timetoplay=0;
 	playroutine();
 	
 	if(playsong) return;
@@ -616,14 +629,27 @@ void tune_songwork()
 	channel[2].inum = 0;
 	osc[3].volume = 0;
 	channel[3].inum = 0;
+	
 	sound_hsstop();
+	delay_10us(5);
+
 	sound_amp_off();
+	delay_10us(10);
+	sound_i2c_reset();
+	delay_10us(5);
+	sound_i2c_reset();
+	delay_10us(5);
 }
 
 
 void tune_playsong()
 {
 	sound_amp_on();
+	delay_10us(10);
+	sound_i2c_reset();
+	delay_10us(5);
+	sound_i2c_reset();
+	delay_10us(5);
 	sound_hsstart();
 	for(;playsong;) {
 		while(!timetoplay);
@@ -640,5 +666,11 @@ void tune_playsong()
 	osc[3].volume = 0;
 	channel[3].inum = 0;
 	sound_hsstop();
+
 	sound_amp_off();
+	delay_10us(10);
+	sound_i2c_reset();
+	delay_10us(5);
+	sound_i2c_reset();
+	delay_10us(5);
 }

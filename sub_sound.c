@@ -8,6 +8,54 @@
 static void sound_wait_poll();
 static void sound_wait_pollint();
 
+void sound_i2c_reset()
+{
+//
+	// Generate start condition and wait
+	//
+
+	
+	pir3.SSP2IF = 0;   	// Clear Interrupt and Collision Indicators
+	pir3.BCL2IF = 0;
+	
+	
+	sound_wait_poll();   // Wait till OK to send command
+	
+	ssp2con2.SEN = 1;		// Send Start Condition
+	
+	sound_wait_poll();	// Wait until start condition finished
+	
+
+
+	
+	pir3.SSP2IF = 0; 	// Clear Interrupt and Collision Indicators
+	pir3.BCL2IF = 0;
+	
+	
+	ssp2buf = 0xff ;		// Send "reset"  device address
+ 
+	sound_wait_poll();  // Wait Until Complete
+
+	pir3.SSP2IF = 0;	// Clear Interrupt and Collision Indicators
+	pir3.BCL2IF = 0;	
+	
+	ssp2con2.RSEN = 1;  // Restart Condition
+	sound_wait_poll(); // Wait Until Complete
+	
+	pir3.SSP2IF = 0;	// Clear Interrupt and Collision Indicators
+	pir3.BCL2IF = 0;	
+	
+	ssp2con2.PEN = 1;  // Send Stop Condition 
+	sound_wait_poll();
+	
+	// Turn Amp On
+	//delay_ms(10);
+	//sound_amp_on();
+	//delay_ms(10);
+
+}
+
+
 void sound_config_polled()
 {
 	//
@@ -124,7 +172,7 @@ void sound_hsstart()
 	sound_wait_poll();			    // Wait to complete (does not ack they HS command)
 
 	ssp2stat.SMP = 1; 				// Disable  slew rate control
-	ssp2add = 5;	  				// Set to HS mode (set BRG to higher speed) (8MHz/(val) + 1) (was 3)
+	ssp2add = 5;	  	       		// Set to HS mode (set BRG to higher speed) (8MHz/(val) + 1) (was 3)
 	pir3.SSP2IF = 0;				// Clear Interrupt and Collision FLags
 	pir3.BCL2IF = 0;
 	
@@ -136,7 +184,7 @@ void sound_hsstart()
 	pir3.SSP2IF = 0;				// Clear Interrupt and Collision FLags
 	pir3.BCL2IF = 0;
 	ssp2buf = DAC_I2C_ADDRESS<<1;	// Send device address
-	//sound_wait_poll();			// Wait to complete
+	sound_wait_poll();			    // Wait to complete
 	
 	
 }
@@ -179,6 +227,7 @@ void sound_hsstop()
 
 	ssp2stat.SMP = 0; //Enable slew rate control
 	ssp2add = 19; // Reset to Normal FS I2C rate
+	
 
 	
 }

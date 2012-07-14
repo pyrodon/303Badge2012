@@ -54,20 +54,10 @@ void main()
 	// Main Worker Loop
 	//
 
-	for (i=1; i <= 20; i++) {
+
 	
-		songselect(i);
-		
-		//light_show(LIGHTSHOW_RAINBOW, 3);
-		//sample_play();
-		//delay_s(2);
-		
-		tune_init();
-		tune_playsong();
-		delay_s(1);
-	}
-	
-	
+	tune_startsong(9);
+	light_show(LIGHTSHOW_CEYLON, 5);
 	//etoh_breathtest(ETOH_START, 0 );
 	
 	while(1) {
@@ -79,9 +69,11 @@ void main()
 		intr_msecs = 0;
 		set_bit(intcon, TMR0IE);
 		
+		
+		
 		elapsed_msecs += loop_msecs; // May remove.. Ideally pass the current loop msecs into 
 									 // state machine so they can do their own timing, but keep for now
-									 
+		tune_songwork();							 
 		light_animate(loop_msecs);
 		etoh_breathtest(ETOH_DOWORK,  loop_msecs );
 									 
@@ -221,7 +213,7 @@ void interrupt( void )
 			intr_msecs++;		// Rolling msec counter (wraps every 65K seconds)
 		}
 		//sample_intr();
-		//light_intr();
+		light_intr();
 		tune_play_intr();
 		clear_bit(intcon,TMR0IF);
 		set_bit(intcon, TMR0IE);

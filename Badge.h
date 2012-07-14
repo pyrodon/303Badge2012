@@ -108,11 +108,12 @@ void mcu_initialize();
 //
 // In File: sub_sound.c (Sound Subsystem)
 //
-void sound_config_polled();
-void sound_val_polled(unsigned char );
-void sound_hsstart();
-void sound_hsstop();
-void sound_val_hs(unsigned char );
+extern void sound_config_polled();
+extern void sound_val_polled(unsigned char );
+extern void sound_hsstart();
+extern void sound_hsstop();
+extern void sound_val_hs(unsigned char );
+extern void sound_i2c_reset();
 #define sound_amp_on() portd.SIG_RD_SOUND_STBY_N_O = 1
 #define sound_amp_off() portd.SIG_RD_SOUND_STBY_N_O = 0
 
@@ -123,6 +124,8 @@ void sound_val_hs(unsigned char );
 void tune_init();
 void tune_play_intr();
 void tune_playsong();
+void tune_startsong(unsigned char );
+void tune_songwork();
 
 //#ifdef MRF49XA_LOCAL
 // Defines to get the MicroChip test program working (MRF49ZA.c)
