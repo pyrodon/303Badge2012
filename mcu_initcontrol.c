@@ -101,7 +101,7 @@ void mcu_initialize()
 	tmr0l = TIMER_REGVAL;
 	t0con.TMR0ON = 1;
 
-    set_bit(intcon, TMR0IE);		// Enable Timer Interrtups
+    intcon.TMR0IE = 1;		// Enable Timer Interrtups
 	
 }
 

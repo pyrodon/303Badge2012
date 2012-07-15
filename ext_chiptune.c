@@ -442,15 +442,18 @@ void playroutine() {			// called at 50 Hz
 	  case 1:
 		portc.SIG_RC_DISP_RED_O = 0;
 		portb.SIG_RB_DISPLED1_O = 1;
+		portc.SIG_RC_DISPLED7_O = 1;
 	    break;
 	  case 2:
 		portc.SIG_RC_DISP_GRN_O = 0;
+		portb.SIG_RB_DISPLED3_O = 1;
 		portb.SIG_RB_DISPLED4_O = 1;
+		portb.SIG_RB_DISPLED5_O = 1;
 		break;
 	  case 3:
 		portc.SIG_RC_DISP_BLU_O = 0;
 		portb.SIG_RB_DISPLED2_O = 1;
-		portb.SIG_RB_DISPLED3_O = 1;
+		portc.SIG_RC_DISPLED6_O = 1;
 		break;
 	}
 			
