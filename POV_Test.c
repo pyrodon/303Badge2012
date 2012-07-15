@@ -29,9 +29,8 @@ static unsigned char charcnt = 0;
 
 
 
-void led_showbin(unsigned char color,  unsigned char bitdata)
+void led_showbin(unsigned char color,  unsigned char bitdata) 
 {
-
 
 	portc.SIG_RC_DISP_RED_O = 1;
 	portc.SIG_RC_DISP_BLU_O = 1;
@@ -100,11 +99,7 @@ void led_showbin(unsigned char color,  unsigned char bitdata)
 		break;
 	 }
 	 
-	 delay_100us(1);
-	 portc.SIG_RC_DISP_RED_O = 1;
-	 portc.SIG_RC_DISP_BLU_O = 1;
-	 portc.SIG_RC_DISP_GRN_O = 1;  // TURN OFF COLORS
-	 delay_100us(19);
+
 }
 
 void led_pov_next(unsigned char color)
@@ -118,6 +113,8 @@ void led_pov_next(unsigned char color)
 		    autocolor = LED_SHOW_RED;
 	}
     led_showbin(color == LED_SHOW_AUTO ? autocolor : color, povdata[charcnt]);
+    delay_100us(1);
+    led_showbin(color == LED_SHOW_AUTO ? autocolor : color, 0);
     charcnt++;
 }
 	 

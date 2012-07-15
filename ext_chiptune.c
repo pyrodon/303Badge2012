@@ -22,7 +22,7 @@ volatile u8 testwait;
 
 u8 trackwait;
 u8 trackpos;
-u8 playsong;
+unsigned char  playsong;
 u8 songpos;
 
 unsigned long SongAddress = 0;
@@ -365,10 +365,11 @@ void playroutine() {			// called at 50 Hz
 		}
 	}
 
-	for(ch = 0, cptr=&channel[0]; ch < 4; ch++) { // ***
+	for(ch = 0 ; ch < 4; ch++) { // ***
 		s16 vol;
 		u16 duty;
 		u16 slur;
+		cptr=&channel[ch];
 
 		while(cptr->inum && !cptr->iwait) {
 			u8 il[2];
@@ -414,13 +415,16 @@ void playroutine() {			// called at 50 Hz
 		osc[ch].duty = duty;
 
 		cptr->vpos += cptr->vrate;
-		cptr++;
+		//cptr++;
 	}
 
 	portb.SIG_RB_DISPLED1_O = 0;
 	portb.SIG_RB_DISPLED2_O = 0;
 	portb.SIG_RB_DISPLED3_O = 0;
 	portb.SIG_RB_DISPLED4_O = 0;
+	portb.SIG_RB_DISPLED5_O = 0;
+	portc.SIG_RC_DISPLED6_O = 0;
+	portc.SIG_RC_DISPLED7_O = 0;
 	portc.SIG_RC_DISP_BLU_O = 1;
 	portc.SIG_RC_DISP_RED_O = 1;
 	portc.SIG_RC_DISP_GRN_O = 1;

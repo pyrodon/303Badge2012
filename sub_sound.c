@@ -148,6 +148,8 @@ void sound_val_polled(unsigned char dacval)
 	pir3.BCL2IF = 0;		
 	ssp2con2.PEN = 1;  		// Send Stop Condition Stop 
 	sound_wait_poll();		// Wait to complete
+	pir3.SSP2IF = 0;		// Clear Interrupt and Collision FLags
+	pir3.BCL2IF = 0;	
 	
 }
 	
@@ -185,6 +187,8 @@ void sound_hsstart()
 	pir3.BCL2IF = 0;
 	ssp2buf = DAC_I2C_ADDRESS<<1;	// Send device address
 	sound_wait_poll();			    // Wait to complete
+	pir3.SSP2IF = 0;		// Clear Interrupt and Collision FLags
+	pir3.BCL2IF = 0;
 	
 	
 }
@@ -224,6 +228,8 @@ void sound_hsstop()
 	pir3.BCL2IF = 0;		
 	ssp2con2.PEN = 1;  		// Send Stop Condition Stop 
 	sound_wait_poll();		// Wait to complete
+	pir3.SSP2IF = 0;		// Clear Interrupt and Collision FLags
+	pir3.BCL2IF = 0;
 
 	ssp2stat.SMP = 0; //Enable slew rate control
 	ssp2add = 19; // Reset to Normal FS I2C rate

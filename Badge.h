@@ -126,6 +126,7 @@ void tune_play_intr();
 void tune_playsong();
 void tune_startsong(unsigned char );
 void tune_songwork();
+extern unsigned char playsong;
 
 //#ifdef MRF49XA_LOCAL
 // Defines to get the MicroChip test program working (MRF49ZA.c)
@@ -181,6 +182,8 @@ extern void light_play();
 extern void light_intr(); 
 extern void light_show(unsigned char , unsigned char );
 extern void light_animate(unsigned char );
+extern unsigned char lightshowrun;
+
 #define NUMLIGHTS 7
 #define MAXLIGHTPHASE 23
 #define NUMINTENSITY  8
@@ -194,6 +197,19 @@ extern void light_animate(unsigned char );
 // sub_sample.c
 extern void sample_play();
 extern void sample_intr();
+extern unsigned char playsample;
+
+// sub_nvsettings.c
+extern void nvreadbuf();
+extern void nvsavebuf();
+extern unsigned char nvget_badgeid();
+extern void nvset_badgeid(unsigned char );
+extern unsigned char nvget_badgetype();
+extern void nvset_badgetype(unsigned char );
+extern unsigned char nvget_badgeperm();
+extern void nvset_badgeperm(unsigned char );
+extern unsigned char nvget_socvec1();
+extern void nvset_socvec1(unsigned char );
 
 
 //

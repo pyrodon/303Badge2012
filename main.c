@@ -13,6 +13,8 @@ unsigned char loop_msecs = 0;		        //
 volatile unsigned char intr_intfreq;		// 1-up counter every time through intr routine
 volatile unsigned char intr_msecs;
 
+unsigned char MyBadgeID;
+
 
 #define DELAYMS	20 
 
@@ -35,16 +37,17 @@ void main()
 	
 	mcu_initialize();	// Initialize MCU resources and 8KHz interrupt...
 	
+	nvreadbuf();		// Load the NV buffer from flash
+	
 	
 	sound_config_polled(); 		// Configure the sound subsystem chip
+	
+
 	
 	// Enable Global Interrupts
 	set_bit(intcon, GIE);	// Use Interrupts. ISR is interrupt(), below
 
 
-	
-	//init_etoh();
-	//porta.SIG_RA_ETOH_HTR_N_O = 1; // Turn off Heater
 
 	etoh_init();
 	MRF49XA_Init();
@@ -54,9 +57,15 @@ void main()
 	// Main Worker Loop
 	//
 
+    // Show the address of the badge on the LEDs
+    MyBadgeID = nvget_badgeid();
+    led_showbin(MyBadgeID & 0x80 ? LED_SHOW_BLU : LED_SHOW_RED, MyBadgeID & 0x7f );
+    delay_s(5);
+    led_showbin(LED_SHOW_NONE, 0);
 
-	
-	tune_startsong(9);
+
+	light_init();
+	tune_startsong(SONG_KRY0);
 	light_show(LIGHTSHOW_CEYLON, 5);
 	//etoh_breathtest(ETOH_START, 0 );
 	
@@ -204,19 +213,28 @@ static unsigned char soundval = 0;
 
 void interrupt( void ) 
 {
-	if(test_bit(intcon, TMR0IF)) {  // 8 KHz driven interrupt events
-		clear_bit(intcon, TMR0IE);
+	if(intcon.TMR0IF) {  // 8 KHz driven interrupt events
+		intcon.TMR0IE = 0;
 		tmr0l = TIMER_REGVAL;
 		intr_intfreq++;
-		if(intr_intfreq == 8) {  // Convert HZ rate to msecs
+		if(intr_intfreq >= 8) {  // Convert HZ rate to msecs
 			intr_intfreq = 0;
 			intr_msecs++;		// Rolling msec counter (wraps every 65K seconds)
 		}
-		//sample_intr();
-		light_intr();
-		tune_play_intr();
-		clear_bit(intcon,TMR0IF);
-		set_bit(intcon, TMR0IE);
+		
+		
+		if (playsong) {
+		   tune_play_intr();
+		} else if(playsample) {
+			sample_intr();
+		} else if(lightshowrun) {
+			light_intr();
+		}
+		
+		intcon.TMR0IF = 0;
+		intcon.TMR0IE = 1;
+		
+
 	}	
 }
 	

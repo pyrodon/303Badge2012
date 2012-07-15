@@ -4,7 +4,7 @@
 #include "Samples/d2.h"
 
 static unsigned short sampoffset;
-volatile unsigned char playsample=0;
+unsigned char playsample=0;
 
 void sample_play()
 {

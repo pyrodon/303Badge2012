@@ -44,7 +44,7 @@ Debug\sub_nvsettings.obj: sub_nvsettings.c Badge.h BadgeCheckoutCode.Debug.__f
 LD = "C:\Program Files\SourceBoost\boostlink_pic.exe"
 
 Debug\BadgeCheckoutCode.hex: Debug\main.obj Debug\mcu_initcontrol.obj Debug\sub_sound.obj Debug\ext_chiptune.obj Debug\MRF49XA.obj Debug\ETOH-Driver.obj Debug\POV_Test.obj Debug\SerialPort.obj Debug\sub_lights.obj Debug\sub_samples.obj Debug\ext_chiptune_songsel.obj Debug\sub_nvsettings.obj 
-	$(LD)  -idx 2  /ld "C:\Program Files\SourceBoost\lib\large" libc.pic18.lib Debug\main.obj Debug\mcu_initcontrol.obj Debug\sub_sound.obj Debug\ext_chiptune.obj Debug\MRF49XA.obj Debug\ETOH-Driver.obj Debug\POV_Test.obj Debug\SerialPort.obj Debug\sub_lights.obj Debug\sub_samples.obj Debug\ext_chiptune_songsel.obj Debug\sub_nvsettings.obj /t PIC18F67J11 flash.pic18.lib  /d "Debug" /p BadgeCheckoutCode
+	$(LD)  -idx 2  /ld "C:\Program Files\SourceBoost\lib\large" libc.pic18.lib Debug\main.obj Debug\mcu_initcontrol.obj Debug\sub_sound.obj Debug\ext_chiptune.obj Debug\MRF49XA.obj Debug\ETOH-Driver.obj Debug\POV_Test.obj Debug\SerialPort.obj Debug\sub_lights.obj Debug\sub_samples.obj Debug\ext_chiptune_songsel.obj Debug\sub_nvsettings.obj /t PIC18F67J11 -swcs 8 4  flash.pic18.lib  /d "Debug" /p BadgeCheckoutCode
 
 all: Debug Debug\BadgeCheckoutCode.hex
 

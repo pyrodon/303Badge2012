@@ -1,4 +1,4 @@
 [Compiler]
 Extra=
 [Linker]
-Extra=flash.pic18.lib
+Extra=-swcs 8 4  flash.pic18.lib

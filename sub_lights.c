@@ -90,8 +90,8 @@ void light_play()
 
 
 
-volatile unsigned char  light_intr_ix = 0;  // Which LED we are working on (1-7 (indexed 0-6))
-volatile unsigned char light_intr_phase = 0;  // Interrupt Phase Counter
+unsigned char  light_intr_ix = 0;  // Which LED we are working on (1-7 (indexed 0-6))
+unsigned char light_intr_phase = 0;  // Interrupt Phase Counter
 
 void light_intr()   // Called at 8 KHZ // 
 {
@@ -173,7 +173,7 @@ void light_intr()   // Called at 8 KHZ //
 static unsigned char dir, ceyix;
 static unsigned char speedfactor;
 static unsigned char showix;
-static unsigned char lightshowrun;
+unsigned char lightshowrun;
 static unsigned char dongstate, dongcount;
 
 static char msec_accum;

@@ -47,3 +47,6 @@ Count=0
 compile=1
 link=1
 program=0
+[Browser]
+UseSysHeaders=0
+UseNovoHeaders=0
