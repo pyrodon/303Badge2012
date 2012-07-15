@@ -23,7 +23,7 @@ Debug\MRF49XA.obj: MRF49XA.c MRF49XA.h Badge.h BadgeCheckoutCode.Debug.__f
 Debug\ETOH-Driver.obj: ETOH-Driver.c Badge.h BadgeCheckoutCode.Debug.__f
 	$(CC) ETOH-Driver.c -t PIC18F67J11  -idx 2 -W2 -obj Debug -d _DEBUG
 
-Debug\POV_Test.obj: POV_Test.c Badge.h BadgeCheckoutCode.Debug.__f
+Debug\POV_Test.obj: POV_Test.c Badge.h CharData\Char5x7Data.h CharData\Char5x7Data.x BadgeCheckoutCode.Debug.__f
 	$(CC) POV_Test.c -t PIC18F67J11  -idx 2 -W2 -obj Debug -d _DEBUG
 
 Debug\SerialPort.obj: SerialPort.c Badge.h BadgeCheckoutCode.Debug.__f

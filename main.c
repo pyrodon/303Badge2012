@@ -5,7 +5,7 @@
 #include "ext_chiptunesong.h"
 
 
-#define ELAPSED_SECS() (elapsed_msecs >> 10)
+#define ELAPSED_SECS() (elapsed_msecs >> 10) // Not exact second but more efficient than /1000
 
 unsigned long elapsed_msecs = 0;			// Total elapsed time in seconds
 unsigned char loop_msecs = 0;		        //
@@ -17,7 +17,7 @@ unsigned char MyBadgeID;
 unsigned char MyMode;
 
 #define MODE_IDLE 		0	// Idle mode (no buttons pressed) listening for RF
-#define MODE_GETCMD 	1	// In command mode. Suspend Other stuff
+#define MODE_GETCMD 	1	// In (button) command mode. Suspend Other stuff
 #define MODE_ETOH		2	// Getting ETOH readings, do not interrupt
 #define MODE_EXEC		3	// Executing Transient Command
 #define MODE_ATTEN		4	// Attention mode.. Suspend outgoing RF and Buttons
@@ -77,13 +77,17 @@ void main()
     delay_s(3);
     led_showbin(LED_SHOW_NONE, 0);
     
-    // Enable Global Interrupts
-	// Use Interrupts. ISR is interrupt(), below	
-	intcon.GIE=1;
     
     //
     // Perform POV credits
     //
+    led_pov(LED_SHOW_AUTO, 300);
+    
+    // Enable Global Interrupts
+	// Use Interrupts. ISR is interrupt(), below	
+	intcon.GIE=1;
+    
+
 
 
 
@@ -103,11 +107,11 @@ void main()
 		loop_msecs = intr_msecs; // Take copy to avoid race conditions
 		intr_msecs = 0;
 		set_bit(intcon, TMR0IE);
+		elapsed_msecs += loop_msecs; // Update elapsed time in msecs
 		
-		
-		
-		elapsed_msecs += loop_msecs; // May remove.. Ideally pass the current loop msecs into 
-									 // state machine so they can do their own timing, but keep for now
+		switch(MyMode) {
+		}
+		  
 		tune_songwork();							 
 		light_animate(loop_msecs);
 		etoh_breathtest(ETOH_DOWORK,  loop_msecs );
@@ -117,30 +121,7 @@ void main()
 		
 	}	
 	
-	
-	
-	//
-	// Testing Light Show
-	//
-	
 
-
-	for(i=0; i < NUMLIGHTS; i++) {
-		light_set(i, i, NUMLIGHTS-1-i, 0);
-	}
-	while(1);
-	
-
-
-	      
-	   	   
-
-	
-
-
-    
-//	tune_init();
-//	tune_playsong();
 	
     while(1) {
        led_pov_next(LED_SHOW_AUTO);

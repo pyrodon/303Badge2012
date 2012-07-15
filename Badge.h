@@ -164,6 +164,7 @@ extern unsigned char etoh_breathtest(unsigned char , unsigned char );
 #define LED_SHOW_AUTO	4
 extern void led_showbin(unsigned char,  unsigned char);
 extern void led_pov_next(unsigned char );
+extern void led_pov(unsigned char, unsigned short  );
 
 
 //
