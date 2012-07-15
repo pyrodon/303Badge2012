@@ -1,7 +1,7 @@
 #define MAXTRACK_PEWPEW	0x01
 #define SONGLEN_PEWPEW		0x01
 
-#define SONGDATA_PEWPEW 0x1D8A0
+#define SONGDATA_PEWPEW 0x1D7A0
 #pragma DATA SONGDATA_PEWPEW,
 #include "pewpew.x"
 

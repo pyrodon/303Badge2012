@@ -1,7 +1,7 @@
 #define MAXTRACK_CHIRP2	0x01
 #define SONGLEN_CHIRP2		0x01
 
-#define SONGDATA_CHIRP2 0x1C1A0
+#define SONGDATA_CHIRP2 0x1C0A0
 
 #pragma DATA SONGDATA_CHIRP2,
 #include "chirp2.x"

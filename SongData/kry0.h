@@ -1,7 +1,7 @@
 #define MAXTRACK_KRY0	0x39
 #define SONGLEN_KRY0		0x37
 
-#define SONGDATA_KRY0 0x1CA20
+#define SONGDATA_KRY0 0x1C920
 #pragma DATA SONGDATA_KRY0,
 #include "kry0.x"
 

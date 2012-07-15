@@ -14,7 +14,7 @@ Config=1
 Last ExtIdx=7
 Last Dir=C:\Users\dkark\Documents\GitHub\303Badge2012\Samples\
 [Files]
-Count=16
+Count=17
 File0=..\..\..\..\..\..\..\Program Files\SourceBoost\include\PIC18F67J11.h
 File1=Badge.h
 File2=BadgePicConfig.h
@@ -31,6 +31,7 @@ File12=SerialPort.c
 File13=sub_lights.c
 File14=sub_samples.c
 File15=ext_chiptune_songsel.c
+File16=sub_nvsettings.c
 [Tools]
 BoostDir=C:\Program Files\SourceBoost\
 Programmer=
