@@ -146,13 +146,20 @@ extern unsigned char playsong;
 //
 extern void etoh_init();
 extern unsigned short etoh_get();
-extern unsigned char etoh_breathtest(unsigned char , unsigned char );
+extern unsigned char etoh_breathtest(unsigned char , unsigned short );
+extern unsigned char etoh_getreward();
 #define ETOH_START 1			// Commands
 #define ETOH_KILL 2
 #define ETOH_DOWORK 0
 
-#define ETOH_WORKING 1			// Machine Status
-#define ETOH_DONE    0 
+#define ETOH_WORKING 2			// Machine Status
+#define ETOH_DONE    1 
+#define ETOH_IDLE	 0
+
+
+#define REWARD_SOBER 0			// Reward Status
+#define REWARD_TIPSY  1
+#define REWARD_DRUNK 2
 
 // 
 // POV module

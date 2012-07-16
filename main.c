@@ -4,6 +4,16 @@
 #include "MRF49XA.h" 
 #include "ext_chiptunesong.h"
 
+#define SPEEDTEST
+
+#ifdef SPEEDTEST			// Speeds up some of the user experience parameters for testing
+#define TIME_ADDR 1
+#define TIME_POV  10
+#else
+#define TIME_ADDR 4
+#define TIME_POV  300
+#endif
+
 
 #define ELAPSED_SECS() (elapsed_msecs >> 10) // Not exact second but more efficient than /1000
 
@@ -74,14 +84,14 @@ void main()
     // numbers anyway
     MyBadgeID = nvget_badgeid();
     led_showbin(MyBadgeID & 0x80 ? LED_SHOW_RED : LED_SHOW_GRN, MyBadgeID & 0x7f );
-    delay_s(3);
+    delay_s(TIME_ADDR);
     led_showbin(LED_SHOW_NONE, 0);
     
     
     //
     // Perform POV credits
     //
-    led_pov(LED_SHOW_AUTO, 300);
+    led_pov(LED_SHOW_AUTO, TIME_POV);
     
     // Enable Global Interrupts
 	// Use Interrupts. ISR is interrupt(), below	
@@ -95,7 +105,7 @@ void main()
 	//light_show(LIGHTSHOW_RAINBOW, 5);
 	
 	
-	//etoh_breathtest(ETOH_START, 0 );
+	etoh_breathtest(ETOH_START, 0 );
 	// 
 	// Main Worker Loop
 	//	
@@ -109,14 +119,28 @@ void main()
 		set_bit(intcon, TMR0IE);
 		elapsed_msecs += loop_msecs; // Update elapsed time in msecs
 		
-		switch(MyMode) {
-		}
+		//switch(MyMode) {
+		//}
 		  
 		tune_songwork();							 
 		light_animate(loop_msecs);
-		etoh_breathtest(ETOH_DOWORK,  loop_msecs );
 		
-		led_showbin(LED_SHOW_BLU, (unsigned char)(ELAPSED_SECS() & 0x7f));
+		if(etoh_breathtest(ETOH_DOWORK,  loop_msecs ) == ETOH_DONE) {
+			switch(etoh_getreward()) {
+			  case REWARD_SOBER:
+			    tune_startsong(SONG_BUZZER);
+			    break;
+			  case REWARD_TIPSY: 
+			    tune_startsong(SONG_DYING);
+			    break;
+			  case REWARD_DRUNK:
+			    tune_startsong(SONG_CACTUS);
+			    break;
+			 }
+	    }
+			
+		
+		// led_showbin(LED_SHOW_BLU, (unsigned char)(ELAPSED_SECS() & 0x7f));
 									 
 		
 	}	
@@ -238,7 +262,7 @@ void interrupt( void )
 		   tune_play_intr();
 		} else if(playsample) {
 			sample_intr();
-		} else if(lightshowrun) {
+		} else  {
 			light_intr();
 		}
 		

@@ -44,18 +44,20 @@ unsigned short etoh_get()
 static unsigned long etoh_r2_resistance;
 static unsigned short etoh_125ppm_threshold_val; 
 static unsigned short etoh_baseline_val; 
+static unsigned short etoh_mid_val; 
 
 #define ETOH_HEATER_TIME	10000 // in msecs
 
+static unsigned char etoh_reward;
 
 
 
 
-unsigned char  etoh_breathtest(unsigned char startkill, unsigned char msecs)
+unsigned char  etoh_breathtest(unsigned char startkill, unsigned short msecs)
 {
 	static unsigned char mstate;  // Machine State
-	static unsigned short elapsed;
-	static unsigned short measure4;
+	static unsigned short elapsed, lastelapsed;
+	static unsigned short measure4, measureblow;
 
 	
 	elapsed += msecs;		// Increment elapsed time in milliseconds
@@ -69,31 +71,40 @@ unsigned char  etoh_breathtest(unsigned char startkill, unsigned char msecs)
 		etoh_heater_on();
 		elapsed = 0;
 		mstate = 1;
+		etoh_reward = REWARD_SOBER; 
+		light_set(0,4,0,0); // Turn on red light to indicate wait
+		light_set(1,4,0,0); // Turn on red light to indicate wait
+		light_set(2,4,0,0); // Turn on red light to indicate wait
+		light_set(3,4,0,0); // Turn on red light to indicate wait
+		
 	}
 
 	
 	switch(mstate) {
 	  case 0: // IDLE STATE
-	    return (ETOH_DONE);
+	    return (ETOH_IDLE);
 	    break;
 	  case 1: // Starting Process
 	    light_init();	// Turn off lights
-	    light_set(0,4,0,0); // Turn on red light to indicate wait
+	  
 	    etoh_heater_on(); // Turn on heater
 	    mstate = 2; 	  // Advance to next stage
 	    break;
 	  case 2:
-	    if(elapsed < 9500) return(ETOH_WORKING); // Wait 9.5 seconds for sensor to warm up
+	    if(elapsed < 7000) return(ETOH_WORKING); // Wait 9.5 seconds for sensor to warm up
+	    light_set(3,0,0,0); // Turn on red light to indicate wait
 	    measure4 = etoh_get();
 	    mstate = 3;
 	    break;
 	  case 3:
-	    if(elapsed < 9600) return(ETOH_WORKING); // Wait 9.5 seconds for sensor to warm up
+	    if(elapsed < 8000) return(ETOH_WORKING); // Wait 9.5 seconds for sensor to warm up
+	    light_set(2,0,0,0); // Turn on red light to indicate wait
 	    measure4 += etoh_get();
 	    mstate = 4;
 	    break;	    
 	  case 4:
-	    if(elapsed < 9700) return(ETOH_WORKING); // Wait 9.5 seconds for sensor to warm up
+	    if(elapsed < 9000) return(ETOH_WORKING); // Wait 9.5 seconds for sensor to warm up
+	    light_set(1,0,0,0); // Turn on red light to indicate wait
 	    measure4 += etoh_get();
 	    mstate = 5;
 	    break;	 
@@ -107,21 +118,51 @@ unsigned char  etoh_breathtest(unsigned char startkill, unsigned char msecs)
 	    etoh_r2_resistance = ((unsigned long) ETOH_R1 * (unsigned long) measure4) / 
 	      ( (unsigned long) 1024 - (unsigned long) measure4 );
 	      
-	    etoh_r2_resistance /= 3;  // Sensor is defined to have 1/3 resistance at 125ppm
+	    etoh_r2_resistance = (etoh_r2_resistance * 2) / 3 ;  // Sensor is defined to have 1/3 resistance at 125ppm
 	    etoh_125ppm_threshold_val = (unsigned short) (((long) 1024 * etoh_r2_resistance) / 
 	      (etoh_r2_resistance + (long) ETOH_R1));
-	    light_set(0,0,4,0);    // Green light
+	    etoh_mid_val = (etoh_baseline_val + etoh_125ppm_threshold_val) >> 1;
 	    
-	    mstate = 20;
-	    break;	 	    
+	    //light_init();
+	    light_set(0,0,4,0);    // Green light
+	    light_set(1,0,4,0);    // Green light
+	    light_set(2,0,4,0);    // Green light
+		light_set(3,0,4,0);    // Green light
+
+	    
+	    mstate = 10;
+	    lastelapsed = elapsed;
+	    break;	 	
+	   case 10: 
+	     if(elapsed > 17000) {
+			mstate = 20;
+			break;
+		 }
+		 measureblow = etoh_get();
+		 if((measureblow < etoh_125ppm_threshold_val) && (etoh_reward < REWARD_DRUNK)) {
+			etoh_reward = REWARD_DRUNK;
+			//light_set(2,4,0,0);
+			mstate = 20;
+		 }
+		 else if((measureblow < etoh_mid_val) && (etoh_reward < REWARD_TIPSY)) {
+			etoh_reward = REWARD_TIPSY;
+			light_set(6,4,4,0);
+		 }
+		 break;
+		 
 	   case 20:
 	     etoh_heater_off();
 		 mstate = 0;
+		 light_init();
 		 return(ETOH_DONE);
 	}
 	
 	return(ETOH_WORKING);
 }
 	  
+unsigned char etoh_getreward()
+{
+	return(etoh_reward);
+}
 	  
 	
