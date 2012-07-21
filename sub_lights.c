@@ -17,7 +17,7 @@
 
 // #define LIGHTSHOW_OFF	0
 // #define LIGHTSHOW_CEYLON 1
-// #define LIGHTSHOW_RGWAVE 2
+// #define LIGHTSHOW_FLASH 2
 // #define LIGHTSHOW_COUNTDOWN 3
 // #define LIGHTSHOW_RAINBOW 4
 
@@ -225,6 +225,7 @@ static unsigned char speedfactor;
 static unsigned char showix;
 unsigned char lightshowrun = 0;
 static unsigned char dongstate, dongcount;
+static unsigned char flashcount;
 
 static char msec_accum;
 static char loopfac; 
@@ -241,7 +242,8 @@ void light_show(unsigned char which, unsigned char factor)
 	    dir = 1; // For this one, it control the direction. INitially up
 	    ceyix = 0;
 	    break;
-	  case LIGHTSHOW_RGWAVE:
+	  case LIGHTSHOW_FLASH:		
+	    flashcount = 2;
 	    break;
 	  case LIGHTSHOW_COUNTDOWN:
 	    break;
@@ -296,7 +298,10 @@ void light_animate(unsigned char msecs)
 		}
 		light_set(ceyix, 4, 0, 0);
 	    break;
-	  case LIGHTSHOW_RGWAVE:
+	  case LIGHTSHOW_FLASH:
+	    flashcount--;
+	    if(flashcount) break;
+	    light_showbin(0,0,0,0);
 	    break;
 	  case LIGHTSHOW_COUNTDOWN:
 	    break;

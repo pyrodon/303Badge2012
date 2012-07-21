@@ -30,7 +30,7 @@ void proc_btn1()
 	} else {
 		return;
 	}
-	//nvsavebuf();
+	nvsavebuf();
 	
 }
 		

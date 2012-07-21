@@ -3,6 +3,7 @@
 #include "Badge.h"
 #include "MRF49XA.h" 
 #include "ext_chiptunesong.h"
+#include "sub_rfcmd.h"
 
 #define SPEEDTEST
 
@@ -24,34 +25,32 @@ volatile unsigned char intr_intfreq;		// 1-up counter every time through intr ro
 volatile unsigned char intr_msecs;
 
 unsigned char MyBadgeID;
-unsigned char MyMode;
+volatile unsigned char MyMode;
 
-unsigned char rfrxbuf[8];
-unsigned char rftxbuf[8];
+unsigned char rfrxbuf[PAYLOAD_MAX];
+unsigned char rftxbuf[PAYLOAD_MAX];
+unsigned char rfrxlen;
+
+#ifdef SPEEDTEST
+#define BEACON_BASE (5*100)		// 5 second beacons
+#else
+#define BEACON_BASE (2*60*1000)	// 2 minute beacons
+#endif
+#define BEACON_RNDSCALE 8		// Random bias multiplier 8*255 = 2-3 secs 
+unsigned long last_beacon = 0;
 
 #define RXBUFLEN	8
 
-#define MODE_IDLE 		0	// Idle mode (no buttons pressed) listening for RF
-#define MODE_GETCMD 	1	// In (button) command mode. Suspend Other stuff
-#define MODE_ETOH		2	// Getting ETOH readings, do not interrupt
-#define MODE_EXEC		3	// Executing Transient Command
-#define MODE_ATTEN		4	// Attention mode.. Suspend outgoing RF and Buttons
-#define MODE_PRICMD		5	// Executing priority command
+
 
 
 #define DELAYMS	20 
 
 void main()
 {
-	unsigned char i, j, intensity, retchar;
-	unsigned char loopcnt = 0, etoh_first = 1;
-	unsigned short soundcount;
-
-	unsigned long autocountdown = 0x20000;
+	unsigned char i;
+	unsigned char savemode;
 	
-	unsigned char rfrxdata=1, rfrxlen=1, rftxdata=1; 
-	
-	unsigned char cur_msecs; 
 
 	//
 	// Core Hardware Initialization
@@ -88,19 +87,22 @@ void main()
     // the binary number will show in green if the badge is < 128 and red if >  
     // 128 with the badge addresses 0 and 128 showing up as nothing (typically illegal 
     // numbers anyway
-    led_showbin(LED_SHOW_BLU, nvget_badgetype() | 0x40);
-    delay_10us(10);
-    led_showbin(LED_SHOW_BLU, 0);
     delay_s(1);
-    led_showbin(LED_SHOW_BLU, nvget_badgeperm() | 0x40);
-    delay_10us(10);
-    led_showbin(LED_SHOW_BLU, 0);
+    led_showbin(LED_SHOW_RED, nvget_badgetype() | 0x40);
+    delay_10us(100);
+    led_showbin(LED_SHOW_RED, 0);
+    delay_s(1);
+    led_showbin(LED_SHOW_RED, nvget_badgeperm() | 0x40);
+    delay_10us(100);
+    led_showbin(LED_SHOW_RED, 0);
     delay_s(1);
     
     MyBadgeID = nvget_badgeid();
     led_showbin(MyBadgeID & 0x80 ? LED_SHOW_RED : LED_SHOW_GRN, MyBadgeID & 0x7f );
     delay_s(TIME_ADDR);
     led_showbin(LED_SHOW_NONE, 0);
+    
+    init_rnd(nvget_badgetype()+1, MyBadgeID, 3); // Seed tha random number generator
     
     
     //
@@ -116,11 +118,13 @@ void main()
 
 
 
-	tune_startsong(SONG_KRY0);
-	light_show(LIGHTSHOW_RAINBOW, 5);
+	sample_play();
+	
+	delay_s(2);
 	
 	
-	//etoh_breathtest(ETOH_START, 0 );
+	
+	etoh_breathtest(ETOH_START, 0 );
 	// 
 	// Main Worker Loop
 	//	
@@ -134,13 +138,30 @@ void main()
 		set_bit(intcon, TMR0IE);
 		elapsed_msecs += loop_msecs; // Update elapsed time in msecs
 		
-		//switch(MyMode) {
-		//}
+		savemode = MyMode;	// Used to detact mode changes when command processers set new mode
+		switch(MyMode) {
+		  case MODE_IDLE:
+		    if(MRF49XA_Receive_Packet(rfrxbuf,&rfrxlen) == PACKET_RECEIVED) {
+				MRF49XA_Reset_Radio();
+				//rfcmd_execute(rfrxbuf, rfrxlen);
+		        
+			}
+			if(savemode != MyMode) {	// Don't process remainder of idle loop if state change
+				break;
+			}
+			if(elapsed_msecs < (last_beacon + (rnd_randomize()* BEACON_RNDSCALE))) { // time for beacon
+				//rfcmd_3send(RFCMD_BEACON, MyBadgeID, nvget_socvec1());
+				MRF49XA_Reset_Radio();
+				last_beacon = elapsed_msecs;
+			}
+			break;
+				     
+		    
+		} // switch
 		  
-		tune_songwork();							 
-		light_animate(loop_msecs);
-		
-		if(etoh_breathtest(ETOH_DOWORK,  loop_msecs ) == ETOH_DONE) {
+		tune_songwork();					// Worker thread for songs				 
+		light_animate(loop_msecs);			// worker thread for lights
+		if(etoh_breathtest(ETOH_DOWORK,  loop_msecs ) == ETOH_DONE) {  // worker for ETOH
 			switch(etoh_getreward()) {
 			  case REWARD_SOBER:
 			    tune_startsong(SONG_BUZZER);
@@ -152,6 +173,8 @@ void main()
 			    tune_startsong(SONG_CACTUS);
 			    break;
 			 }
+			 light_show(LIGHTSHOW_RAINBOW, 5);
+			 
 	    }
 			
 		
@@ -160,7 +183,7 @@ void main()
 		
 	}	
 	
-
+#ifdef NEVER
 	
     while(1) {
        led_pov_next(LED_SHOW_AUTO);
@@ -194,7 +217,7 @@ void main()
 	   }
 	   
 	   if(!portf.SIG_RF_AUXBUT_N_I) {
-#ifdef NEVER
+
 			led_showbin(0,0);
 			portb.SIG_RB_DISPLED3_O = 1;
 			portc.SIG_RC_DISP_RED_O = 0; // Red light for 10 seconds to allow sensor to head
@@ -239,7 +262,7 @@ void main()
 			porta.SIG_RA_ETOH_HTR_N_O = 1; // Turn off Heater
 			portc.SIG_RC_DISP_GRN_O = 1;
 			portb.SIG_RB_DISPLED3_O = 0;
-#endif
+
 		}
     }
 	
@@ -254,7 +277,7 @@ void main()
 			tune_playsong();
 		}
 	}
-	    	
+#endif	    	
 }
 
 static unsigned char soundval = 0;

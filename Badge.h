@@ -144,6 +144,17 @@ extern unsigned char playsong;
 //#endif
 
 //
+// Run Mode Definitions
+//
+
+#define MODE_IDLE 		0	// Idle mode (no buttons pressed) listening for RF
+#define MODE_GETCMD 	1	// In (button) command mode. Suspend Other stuff
+#define MODE_ETOH		2	// Getting ETOH readings, do not interrupt
+#define MODE_EXEC		3	// Executing Transient Command
+#define MODE_ATTEN		4	// Attention mode.. Suspend outgoing RF and Buttons
+#define MODE_PRICMD		5	// Executing priority command
+
+//
 //
 extern void etoh_init();
 extern unsigned short etoh_get();
@@ -199,7 +210,7 @@ extern unsigned char lightshowrun;
 #define NUMINTENSITY  8
 #define LIGHTSHOW_OFF	0
 #define LIGHTSHOW_CEYLON 1
-#define LIGHTSHOW_RGWAVE 2
+#define LIGHTSHOW_FLASH 2
 #define LIGHTSHOW_COUNTDOWN 3
 #define LIGHTSHOW_RAINBOW 4
 #define LIGHTSHOW_DONGS 5
@@ -237,6 +248,10 @@ extern void nvset_socvec1(unsigned char );
 
 // sub_btn.c
 extern void proc_btn1();
+
+// sub_random.c
+extern void init_rnd(unsigned char,unsigned char ,unsigned char );
+extern unsigned char rnd_randomize();
 
 
 //

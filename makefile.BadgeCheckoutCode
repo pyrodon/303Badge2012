@@ -5,7 +5,7 @@ Debug:
 
 CC = "C:\Program Files\SourceBoost\boostc_pic18.exe"
 
-Debug\main.obj: main.c BadgePicConfig.h Badge.h MRF49XA.h ext_chiptunesong.h BadgeCheckoutCode.Debug.__f
+Debug\main.obj: main.c BadgePicConfig.h Badge.h MRF49XA.h ext_chiptunesong.h sub_rfcmd.h BadgeCheckoutCode.Debug.__f
 	$(CC) main.c -t PIC18F67J11  -idx 2 -W2 -obj Debug -d _DEBUG
 
 Debug\mcu_initcontrol.obj: mcu_initcontrol.c Badge.h BadgeCheckoutCode.Debug.__f
@@ -44,10 +44,13 @@ Debug\sub_nvsettings.obj: sub_nvsettings.c Badge.h BadgeCheckoutCode.Debug.__f
 Debug\sub_btn.obj: sub_btn.c Badge.h BadgeCheckoutCode.Debug.__f
 	$(CC) sub_btn.c -t PIC18F67J11  -idx 2 -W2 -obj Debug -d _DEBUG
 
+Debug\sub_random.obj: sub_random.c BadgeCheckoutCode.Debug.__f
+	$(CC) sub_random.c -t PIC18F67J11  -idx 2 -W2 -obj Debug -d _DEBUG
+
 LD = "C:\Program Files\SourceBoost\boostlink_pic.exe"
 
-Debug\BadgeCheckoutCode.hex: Debug\main.obj Debug\mcu_initcontrol.obj Debug\sub_sound.obj Debug\ext_chiptune.obj Debug\MRF49XA.obj Debug\ETOH-Driver.obj Debug\POV_Test.obj Debug\SerialPort.obj Debug\sub_lights.obj Debug\sub_samples.obj Debug\ext_chiptune_songsel.obj Debug\sub_nvsettings.obj Debug\sub_btn.obj 
-	$(LD)  -idx 2  /ld "C:\Program Files\SourceBoost\lib\large" libc.pic18.lib Debug\main.obj Debug\mcu_initcontrol.obj Debug\sub_sound.obj Debug\ext_chiptune.obj Debug\MRF49XA.obj Debug\ETOH-Driver.obj Debug\POV_Test.obj Debug\SerialPort.obj Debug\sub_lights.obj Debug\sub_samples.obj Debug\ext_chiptune_songsel.obj Debug\sub_nvsettings.obj Debug\sub_btn.obj /t PIC18F67J11 -swcs 8 4  flash.pic18.lib  /d "Debug" /p BadgeCheckoutCode
+Debug\BadgeCheckoutCode.hex: Debug\main.obj Debug\mcu_initcontrol.obj Debug\sub_sound.obj Debug\ext_chiptune.obj Debug\MRF49XA.obj Debug\ETOH-Driver.obj Debug\POV_Test.obj Debug\SerialPort.obj Debug\sub_lights.obj Debug\sub_samples.obj Debug\ext_chiptune_songsel.obj Debug\sub_nvsettings.obj Debug\sub_btn.obj Debug\sub_random.obj 
+	$(LD)  -idx 2  /ld "C:\Program Files\SourceBoost\lib\large" libc.pic18.lib Debug\main.obj Debug\mcu_initcontrol.obj Debug\sub_sound.obj Debug\ext_chiptune.obj Debug\MRF49XA.obj Debug\ETOH-Driver.obj Debug\POV_Test.obj Debug\SerialPort.obj Debug\sub_lights.obj Debug\sub_samples.obj Debug\ext_chiptune_songsel.obj Debug\sub_nvsettings.obj Debug\sub_btn.obj Debug\sub_random.obj /t PIC18F67J11 -swcs 8 4  flash.pic18.lib  /d "Debug" /p BadgeCheckoutCode
 
 all: Debug Debug\BadgeCheckoutCode.hex
 
@@ -65,6 +68,7 @@ clean:
 	@if exist Debug\ext_chiptune_songsel.obj del Debug\ext_chiptune_songsel.obj
 	@if exist Debug\sub_nvsettings.obj del Debug\sub_nvsettings.obj
 	@if exist Debug\sub_btn.obj del Debug\sub_btn.obj
+	@if exist Debug\sub_random.obj del Debug\sub_random.obj
 	@if exist Debug\BadgeCheckoutCode.hex del Debug\BadgeCheckoutCode.hex
 	@if exist Debug\BadgeCheckoutCode.asm del Debug\BadgeCheckoutCode.asm
 	@if exist Debug\BadgeCheckoutCode.lst del Debug\BadgeCheckoutCode.lst
