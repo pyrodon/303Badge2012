@@ -32,7 +32,7 @@ unsigned char rftxbuf[PAYLOAD_MAX];
 unsigned char rfrxlen;
 
 #ifdef SPEEDTEST
-#define BEACON_BASE (5*100)		// 5 second beacons
+#define BEACON_BASE (5*1000)		// 5 second beacons
 #else
 #define BEACON_BASE (2*60*1000)	// 2 minute beacons
 #endif
@@ -123,8 +123,9 @@ void main()
 	delay_s(2);
 	
 	
-	
+	MyMode = MODE_ETOH;
 	etoh_breathtest(ETOH_START, 0 );
+	
 	// 
 	// Main Worker Loop
 	//	
@@ -143,25 +144,25 @@ void main()
 		  case MODE_IDLE:
 		    if(MRF49XA_Receive_Packet(rfrxbuf,&rfrxlen) == PACKET_RECEIVED) {
 				MRF49XA_Reset_Radio();
-				//rfcmd_execute(rfrxbuf, rfrxlen);
+				led_showbin(LED_SHOW_RED, 2);
+				delay_10us(10);
+				led_showbin(LED_SHOW_RED, 0);
+				rfcmd_execute(rfrxbuf, rfrxlen);
 		        
 			}
 			if(savemode != MyMode) {	// Don't process remainder of idle loop if state change
 				break;
 			}
-			if(elapsed_msecs < (last_beacon + (rnd_randomize()* BEACON_RNDSCALE))) { // time for beacon
-				//rfcmd_3send(RFCMD_BEACON, MyBadgeID, nvget_socvec1());
-				MRF49XA_Reset_Radio();
+			if(elapsed_msecs > (last_beacon + (unsigned long)BEACON_BASE +  ((unsigned long)rnd_randomize()* BEACON_RNDSCALE))) { // time for beacon
+				rfcmd_3send(RFCMD_BEACON, MyBadgeID, nvget_socvec1());
+				led_showbin(LED_SHOW_RED, 4);
+				delay_10us(10);
+				led_showbin(LED_SHOW_RED, 0);
 				last_beacon = elapsed_msecs;
 			}
 			break;
-				     
-		    
-		} // switch
-		  
-		tune_songwork();					// Worker thread for songs				 
-		light_animate(loop_msecs);			// worker thread for lights
-		if(etoh_breathtest(ETOH_DOWORK,  loop_msecs ) == ETOH_DONE) {  // worker for ETOH
+		case MODE_ETOH:
+		  if(etoh_breathtest(ETOH_DOWORK,  loop_msecs ) == ETOH_DONE) {  // worker for ETOH
 			switch(etoh_getreward()) {
 			  case REWARD_SOBER:
 			    tune_startsong(SONG_BUZZER);
@@ -172,10 +173,21 @@ void main()
 			  case REWARD_DRUNK:
 			    tune_startsong(SONG_CACTUS);
 			    break;
+			    
 			 }
+			 MyMode = MODE_IDLE;
+		 
 			 light_show(LIGHTSHOW_RAINBOW, 5);
-			 
-	    }
+			 break;	 
+	      }
+	      break;
+				     
+		    
+		} // switch
+		  
+		tune_songwork();					// Worker thread for songs				 
+		light_animate(loop_msecs);			// worker thread for lights
+
 			
 		
 		// led_showbin(LED_SHOW_BLU, (unsigned char)(ELAPSED_SECS() & 0x7f));

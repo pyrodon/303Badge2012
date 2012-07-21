@@ -253,6 +253,10 @@ extern void proc_btn1();
 extern void init_rnd(unsigned char,unsigned char ,unsigned char );
 extern unsigned char rnd_randomize();
 
+//
+extern void rfcmd_3send(unsigned char , unsigned char , unsigned char );
+extern void rfcmd_execute(unsigned char *, unsigned char );
+
 
 //
 // Flash LED Macro (for debugging purposes)
