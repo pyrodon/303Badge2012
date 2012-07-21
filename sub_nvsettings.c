@@ -5,78 +5,95 @@
 
 unsigned char nvolbuf[64];
 
-
-#define NVBADGEID	0x00		// 8 bit badge address 
-
-#define NVBPERM		0x10		// Badge control permission
-#define NVBTYPE		0x11		// Badget Type
-#define SOCVEC1		0x12		// Social Vector 1
+#define NVBASE		0x1ac00	// Base of the 64 byte configuration
 
 
+#define NVBADGEID_IX	0x00		// 8 bit badge address 
+#define NVBPERM_IX		0x10		// Badge control permission
+#define NVBTYPE_IX		0x11		// Badget Type
+#define SOCVEC1_IX		0x12		// Social Vector 1
 
-
-
-#define NVBT303		0x00		// 303 Badge
-#define NVBTHAC		0x01		// Denhac Badge
-#define NVBTSKY		0x02		// Skytalks Badge	
-
-
-#define NVPRMUSER		0x00   // Plain old user
-#define NBPRMELEV		0x01   // Elevated User
-#define NBPRMROOT		0x02   // Master User (Root)
-
-#define NVBASE		0x1ff00		// Base of the 64 byte configuration
-
-
-
+#pragma DATA NVBASE,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 void nvreadbuf()
 {	
-	flash_read(NVBASE, nvolbuf);
+	unsigned char i;
+	flash_read((unsigned long)NVBASE, nvolbuf);
+	if(nvolbuf[1] = 0xff) {
+		for(i=1;i<64;i++){
+			nvolbuf[i] = 0;
+		}
+	}
+	
 }
 
 void nvsavebuf()
 {
-	flash_erase(NVBASE);
-	flash_write(NVBASE, nvolbuf);
+	flash_erase((unsigned long)NVBASE);
+	
+	delay_100us(2);
+	flash_write((unsigned long)NVBASE, nvolbuf);
+	
+	delay_100us(2);
 
 }
 
 unsigned char nvget_badgeid()
 {
-	return(nvolbuf[NVBADGEID]);
+	return(nvolbuf[NVBADGEID_IX]);
 }
 
 void nvset_badgeid(unsigned char num)
 {
-	nvolbuf[NVBADGEID] = num;
+	nvolbuf[NVBADGEID_IX] = num;
 }
 
 unsigned char nvget_badgetype()
 {
-	return(nvolbuf[NVBTYPE]);
+	return(nvolbuf[NVBTYPE_IX]);
 }
 
 void nvset_badgetype(unsigned char num)
 {
-	nvolbuf[NVBTYPE] = num;
+	nvolbuf[NVBTYPE_IX] = num;
 }
 
 unsigned char nvget_badgeperm()
 {
-	return(nvolbuf[NVBPERM]);
+	return(nvolbuf[NVBPERM_IX]);
 }
 
 void nvset_badgeperm(unsigned char num)
 {
-	nvolbuf[NVBPERM] = num;
+	nvolbuf[NVBPERM_IX] = num;
 }
 
 unsigned char nvget_socvec1()
 {
-	return(nvolbuf[SOCVEC1]);
+	return(nvolbuf[SOCVEC1_IX]);
 }
 
 void nvset_socvec1(unsigned char num)
 {
-	nvolbuf[SOCVEC1] = num;
+	nvolbuf[SOCVEC1_IX] = num;
 }

@@ -17,7 +17,7 @@
 
 void mcu_initialize()
 {
-	
+	intcon.GIE=0;
 	// 
 	// Setup main oscillator. Main oscillator will run at 8MHz (internal) and will be scaled
 	// to 32MHz by enabling the Phase Plocked Loop (PLL)
@@ -73,7 +73,8 @@ void mcu_initialize()
 	adcon0.GO_NOT_DONE = 1;  // Start Conversion
 	while(adcon0.NOT_DONE);  // Wait for completion
 	adcon1.ADCAL = 0;        // reset the calibration bit
-	adcon0 = (1<<ADON);      // Clear all bits except on bit
+	//adcon0 = (1<<ADON);      // Clear all bits except on bit
+	pir1.ADIF = 0;
 
 	
 	

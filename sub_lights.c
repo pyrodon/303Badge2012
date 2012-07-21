@@ -49,10 +49,60 @@ void light_init()
 {
 	unsigned char x;
 	for(x=0; x< NUMLIGHTS; x++) {
-		r_phase[NUMLIGHTS] = 0;
-		g_phase[NUMLIGHTS] = 0;
-		b_phase[NUMLIGHTS] = 0;
+		r_phase[x] = 0;
+		g_phase[x] = 0;
+		b_phase[x] = 0;
 	}
+}
+
+void light_showbin(unsigned char bitdata, unsigned char rp, unsigned char gp, unsigned char bp)
+{
+	if(bitdata & 01000000b) {
+		light_set(0, rp, gp, bp);
+	}
+	else {
+		light_set(0,0,0, 0);
+	}
+	
+	if(bitdata & 00100000b) {
+		light_set(1, rp, gp, bp);
+	}
+	else {
+		light_set(1,0,0, 0);
+	}	
+	
+	if(bitdata & 00010000b) {
+		light_set(2, rp, gp, bp);
+	}
+	else {
+		light_set(2,0,0, 0);
+	}			
+
+	if(bitdata & 00001000b) {
+		light_set(3, rp, gp, bp);
+	}
+	else {
+		light_set(3,0,0, 0);
+	}	
+
+	if(bitdata & 00000100b) {
+		light_set(4, rp, gp, bp);
+	}
+	else {
+		light_set(4,0,0, 0);
+	}	
+	if(bitdata & 00000010b) {
+		light_set(5, rp, gp, bp);
+	}
+	else {
+		light_set(5,0,0, 0);
+	}	
+	if(bitdata & 00000001b) {
+		light_set(6, rp, gp, bp);
+	}
+	else {
+		light_set(6,0,0, 0);
+	}			
 }
 
 void light_set(unsigned char lix, unsigned char rp, unsigned char gp, unsigned char bp)
@@ -173,7 +223,7 @@ void light_intr()   // Called at 8 KHZ //
 static unsigned char dir, ceyix;
 static unsigned char speedfactor;
 static unsigned char showix;
-unsigned char lightshowrun;
+unsigned char lightshowrun = 0;
 static unsigned char dongstate, dongcount;
 
 static char msec_accum;

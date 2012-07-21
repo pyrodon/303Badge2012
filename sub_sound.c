@@ -237,6 +237,21 @@ void sound_hsstop()
 
 	
 }
+
+
+void sound_beep_polled()
+{
+	unsigned char i;
+	
+	sound_amp_on();
+	delay_ms(100);
+	for(i=0; i < 255; i++) {
+		sound_val_polled( i & 0x01 ?  178 : 78);
+		delay_10us(10);
+	}
+	sound_amp_off();
+}
+	
 	
 	
 	

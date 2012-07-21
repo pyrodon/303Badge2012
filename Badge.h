@@ -114,6 +114,7 @@ extern void sound_hsstart();
 extern void sound_hsstop();
 extern void sound_val_hs(unsigned char );
 extern void sound_i2c_reset();
+void sound_beep_polled();
 #define sound_amp_on() portd.SIG_RD_SOUND_STBY_N_O = 1
 #define sound_amp_off() portd.SIG_RD_SOUND_STBY_N_O = 0
 
@@ -185,6 +186,7 @@ unsigned char usb_getchar(char *ch);
 
 extern void light_init();
 extern void light_set(unsigned char, unsigned char, unsigned char, unsigned char);
+extern void light_showbin(unsigned char, unsigned char, unsigned char, unsigned char);
 extern void light_pause();
 extern void light_play(); 
 extern void light_intr(); 
@@ -208,16 +210,33 @@ extern void sample_intr();
 extern unsigned char playsample;
 
 // sub_nvsettings.c
+
+
+
+#define NVBT303		0x00		// 303 Badge
+#define NVBTHAC		0x01		// Denhac Badge
+#define NVBTSKY		0x02		// Skytalks Badge	
+
+
+#define NVPRMUSER		0x00   // Plain old user
+#define NBPRMELEV		0x01   // Elevated User
+#define NBPRMROOT		0x02   // Master User (Root)
+
+
+
 extern void nvreadbuf();
 extern void nvsavebuf();
 extern unsigned char nvget_badgeid();
 extern void nvset_badgeid(unsigned char );
 extern unsigned char nvget_badgetype();
-extern void nvset_badgetype(unsigned char );
+extern void nvset_badgetype(unsigned char);
 extern unsigned char nvget_badgeperm();
 extern void nvset_badgeperm(unsigned char );
 extern unsigned char nvget_socvec1();
 extern void nvset_socvec1(unsigned char );
+
+// sub_btn.c
+extern void proc_btn1();
 
 
 //

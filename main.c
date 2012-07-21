@@ -7,8 +7,8 @@
 #define SPEEDTEST
 
 #ifdef SPEEDTEST			// Speeds up some of the user experience parameters for testing
-#define TIME_ADDR 1
-#define TIME_POV  10
+#define TIME_ADDR 3
+#define TIME_POV  40
 #else
 #define TIME_ADDR 4
 #define TIME_POV  300
@@ -25,6 +25,11 @@ volatile unsigned char intr_msecs;
 
 unsigned char MyBadgeID;
 unsigned char MyMode;
+
+unsigned char rfrxbuf[8];
+unsigned char rftxbuf[8];
+
+#define RXBUFLEN	8
 
 #define MODE_IDLE 		0	// Idle mode (no buttons pressed) listening for RF
 #define MODE_GETCMD 	1	// In (button) command mode. Suspend Other stuff
@@ -56,6 +61,7 @@ void main()
 	mcu_initialize();	// Initialize MCU resources and 8KHz interrupt...
 	
 	nvreadbuf();		// Load the NV buffer from flash (get badge Addr and properties)
+	proc_btn1();		// Process Buttons
 	
 	sound_config_polled(); 		// Configure the sound subsystem chip
 	
@@ -82,6 +88,15 @@ void main()
     // the binary number will show in green if the badge is < 128 and red if >  
     // 128 with the badge addresses 0 and 128 showing up as nothing (typically illegal 
     // numbers anyway
+    led_showbin(LED_SHOW_BLU, nvget_badgetype() | 0x40);
+    delay_10us(10);
+    led_showbin(LED_SHOW_BLU, 0);
+    delay_s(1);
+    led_showbin(LED_SHOW_BLU, nvget_badgeperm() | 0x40);
+    delay_10us(10);
+    led_showbin(LED_SHOW_BLU, 0);
+    delay_s(1);
+    
     MyBadgeID = nvget_badgeid();
     led_showbin(MyBadgeID & 0x80 ? LED_SHOW_RED : LED_SHOW_GRN, MyBadgeID & 0x7f );
     delay_s(TIME_ADDR);
@@ -101,11 +116,11 @@ void main()
 
 
 
-	//tune_startsong(SONG_NYAN);
-	//light_show(LIGHTSHOW_RAINBOW, 5);
+	tune_startsong(SONG_KRY0);
+	light_show(LIGHTSHOW_RAINBOW, 5);
 	
 	
-	etoh_breathtest(ETOH_START, 0 );
+	//etoh_breathtest(ETOH_START, 0 );
 	// 
 	// Main Worker Loop
 	//	
