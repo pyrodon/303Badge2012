@@ -48,7 +48,8 @@
 #define     AFCCREG		 0xC4D7		// Auto AFC (default)
 #define    CFSREG 		 0xA7D0		// Fo=TBDMHz (default)  (Fb = 2000dec)(*)
 #define     TXCREG		 0x9860		// df=60kHz xx3x, Pmax, normal modulation polarity (* Possibly need to use 9801)
-#define    DRSREG 		 0xC611		// 9579Baud (default) (from 23 -> 11 (half rate) (*)
+//#define    DRSREG 		 0xC611		// 9.6KB
+#define    DRSREG 		 0xC611		// 14.0KB
 //#define BCSREG			 0xC0E0
 
 

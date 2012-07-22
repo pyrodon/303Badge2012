@@ -220,30 +220,47 @@ void light_intr()   // Called at 8 KHZ //
 
 }
 	    
-static unsigned char dir, ceyix;
+static unsigned char dir, ceyix, oldceyix;
 static unsigned char speedfactor;
 static unsigned char showix;
 unsigned char lightshowrun = 0;
 static unsigned char dongstate, dongcount;
-static unsigned char flashcount;
+static unsigned char socfstate, socfcount, socfval;
 
-static char msec_accum;
-static char loopfac; 
+
+static unsigned char msec_accum;
+static unsigned char loopfac; 
+static unsigned char curshow;
 	
 void light_show(unsigned char which, unsigned char factor)
 {
+    
     speedfactor = factor;
+  
+  
     light_init();
     msec_accum = loopfac = 0;
     lightshowrun = 1;
 	switch(which) {
 	  case LIGHTSHOW_CEYLON:
 	    light_set(0, 4, 0, 0);
+	    goto ceycomm;
+	  case LIGHTSHOW_SKYSPEAKER:
+	    light_set(0, 2, 0, 5);
+	    goto ceycomm;
+	  case LIGHTSHOW_SKYENFORCER:
+	    light_set(0, 7, 3, 0);
+	    goto ceycomm;
+	  case LIGHTSHOW_SKYGRUNT:
+	    light_set(0, 0,5,0);
+ceycomm:
+	    
 	    dir = 1; // For this one, it control the direction. INitially up
 	    ceyix = 0;
 	    break;
-	  case LIGHTSHOW_FLASH:		
-	    flashcount = 2;
+	  case LIGHTSHOW_SOCFLASH:	
+	    socfstate = 0;
+	    socfcount = 0;
 	    break;
 	  case LIGHTSHOW_COUNTDOWN:
 	    break;
@@ -287,7 +304,11 @@ void light_animate(unsigned char msecs)
 
 	switch(showix) {
 	  case LIGHTSHOW_CEYLON:
-		light_set(ceyix, 0, 0, 0);
+	  case LIGHTSHOW_SKYSPEAKER:
+	  case LIGHTSHOW_SKYENFORCER:
+	  case LIGHTSHOW_SKYGRUNT:
+	    oldceyix = ceyix;
+		//light_set(ceyix, 0, 0, 0);
 		if(dir == 1) {
 			ceyix++;
 			if (ceyix == NUMLIGHTS-1) dir=0;
@@ -296,12 +317,43 @@ void light_animate(unsigned char msecs)
 			ceyix--;
 			if (ceyix == 0) dir=1;
 		}
-		light_set(ceyix, 4, 0, 0);
+
+		
+		r_phase[ceyix] = r_phase[oldceyix];
+		g_phase[ceyix] = g_phase[oldceyix];
+		b_phase[ceyix] = b_phase[oldceyix];
+		r_phase[oldceyix]=0;
+		g_phase[oldceyix]=0;
+		b_phase[oldceyix]=0;
+		
+		//light_set(ceyix, 4, 0, 0);
 	    break;
-	  case LIGHTSHOW_FLASH:
-	    flashcount--;
-	    if(flashcount) break;
-	    light_showbin(0,0,0,0);
+	  case LIGHTSHOW_SOCFLASH:
+	    socfcount--;
+	    switch(socfstate) {
+	      case 0:
+	        socfval = nvget_socvec1();
+	        light_set(5, 0, (socfval & 0x01) ? 4 : 0, 0); // C-Mydia
+	        light_set(4, 0, (socfval & 0x02) ? 4 : 0, (socfval & 0x02) ? 3 : 0); // Syph
+	        light_set(3, (socfval & 0x04) ? 4 : 0, (socfval & 0x04) ? 4 : 0, 0); // Ghon
+	        light_set(2, (socfval & 0x08) ? 4 : 0, 0, (socfval & 0x08) ? 4 : 0); // Herp
+	        light_set(1, (socfval & 0x10) ? 2 : 0, (socfval & 0x10) ? 5 : 0, (socfval & 0x10) ? 2 : 0 ); // Hepc
+	        light_set(0, (socfval & 0x20) ? 7 : 0, 0,  0); // HIV
+	        light_set(6, 0, 0, (socfval & 0x3f ) ? 0 : 7);
+	        socfstate = 1;
+	        socfcount = 1;
+	        break;
+	      case 1:
+	        if(socfcount) break;
+	        light_showbin(0, 0, 0, 0);
+	        socfstate = 2;
+	        socfcount = ((rnd_randomize() & 0x1F) + 1) << 1 ;
+	        break;
+	      case 2:
+	        if(socfcount) break;
+	        socfstate = 0;
+	        break;
+	    }     
 	    break;
 	  case LIGHTSHOW_COUNTDOWN:
 	    break;

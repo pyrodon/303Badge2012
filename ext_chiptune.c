@@ -537,7 +537,7 @@ void tune_play_intr()		// called at 8 KHz
 				value = (optr->phase > optr->duty)? -32 : 31;
 				break;
 			case WF_NOI:
-				value = (s8)(rnd_randomize() & 63) - 32;
+				value = (s8)(rnd_randomizei() & 63) - 32;
 
 				break;
 			default:

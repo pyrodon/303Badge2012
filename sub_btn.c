@@ -19,13 +19,25 @@ void proc_btn1()
 				sound_beep_polled();
 			}
 		}
-	} else 	if(portf.SIG_RF_FUNC_N_I == 0) {
-		nvset_badgetype(NVBTHAC);
+	} else if ((portf.SIG_RF_FUNC_N_I == 0) && (portf.SIG_RF_AUXBUT_N_I == 0)) {
+		nvset_badgetype(NVBT303);
 		sound_beep_polled();
 		delay_ms(10);
+	} else 	if(portf.SIG_RF_FUNC_N_I == 0) {
+		nvset_badgetype(NVBTSKYGRUNT);
+		sound_beep_polled();
+		delay_ms(10);
+	    while(portf.SIG_RF_FUNC_N_I == 0) {
+	        if(portf.SIG_RF_AUXBUT_N_I == 0) {
+	            while(portf.SIG_RF_AUXBUT_N_I == 0);
+	            nvset_badgetype(nvget_badgetype() + 1);
+	            sound_beep_polled();
+				delay_ms(10);
+	        }
+	    }
 		
 	} else if(portf.SIG_RF_AUXBUT_N_I == 0) {
-		nvset_badgetype(NVBTSKY);
+		nvset_badgetype(NVBTHAC);
 		sound_beep_polled();
 	} else {
 		return;

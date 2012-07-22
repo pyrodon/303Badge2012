@@ -4,6 +4,8 @@
 #include "MRF49XA.h"
 
 unsigned char rfoutbuf[8];
+static unsigned short curbeacon_density;	
+static unsigned short lastbeacon_density;
 
 void rfcmd_3send(unsigned char cmd, unsigned char parm1, unsigned char parm2)
 {
@@ -23,7 +25,20 @@ void rfcmd_3send(unsigned char cmd, unsigned char parm1, unsigned char parm2)
 	switch (rbuf[0]) {
 	  case RFCMD_BEACON:
 	    sound_beep_polled();
+	    curbeacon_density++;
 	    break;
 	}		
 	
+}
+
+
+void rfcmd_clrcden()
+{
+	lastbeacon_density = curbeacon_density; 
+	curbeacon_density = 0; 
+}
+
+unsigned short rfcmd_getdensity()
+{
+	return(lastbeacon_density);
 }

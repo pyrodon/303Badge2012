@@ -23,3 +23,27 @@ rnd_b = (rnd_b+rnd_a);         //And the use of very few instructions
 rnd_c = (rnd_c+(rnd_b>>1)^rnd_a);  //the right shift is to ensure that high-order bits from b can affect  
 return(rnd_c);          //low order bits of other variables
 }
+
+static unsigned char rnd_ai = 1, rnd_bi = 50, rnd_ci = 3, rnd_xi = 1;
+
+void init_rndi(unsigned char s1,unsigned char s2,unsigned char s3) //Can also be used to seed the rng with more entropy during use.
+{
+//XOR new entropy into key state
+rnd_ai ^=s1;
+rnd_bi ^=s2;
+rnd_ci ^=s3;
+ 
+rnd_xi++;
+rnd_ai = (rnd_ai^rnd_ci^rnd_xi);
+rnd_bi = (rnd_bi+rnd_ai);
+rnd_ci = (rnd_ci+(rnd_bi>>1)^rnd_ai);
+}
+ 
+unsigned char rnd_randomizei()
+{
+rnd_xi++;               //x is incremented every round and is not affected by any other variable
+rnd_ai = (rnd_ai^rnd_ci^rnd_xi);       //note the mix of addition and XOR
+rnd_bi = (rnd_bi+rnd_ai);         //And the use of very few instructions
+rnd_ci = (rnd_ci+(rnd_bi>>1)^rnd_ai);  //the right shift is to ensure that high-order bits from b can affect  
+return(rnd_ci);          //low order bits of other variables
+}

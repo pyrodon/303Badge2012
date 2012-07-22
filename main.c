@@ -8,8 +8,8 @@
 #define SPEEDTEST
 
 #ifdef SPEEDTEST			// Speeds up some of the user experience parameters for testing
-#define TIME_ADDR 3
-#define TIME_POV  40
+#define TIME_ADDR 2
+#define TIME_POV  10
 #else
 #define TIME_ADDR 4
 #define TIME_POV  300
@@ -102,7 +102,7 @@ void main()
     delay_s(TIME_ADDR);
     led_showbin(LED_SHOW_NONE, 0);
     
-    init_rnd(nvget_badgetype()+1, MyBadgeID, 3); // Seed tha random number generator
+    init_rnd(nvget_badgetype()+1, MyBadgeID, 0x55); // Seed tha random number generator
     
     
     //
@@ -118,13 +118,29 @@ void main()
 
 
 
-	sample_play();
+	//sample_play();
 	
-	delay_s(2);
+	//delay_s(2);
 	
 	
-	MyMode = MODE_ETOH;
-	etoh_breathtest(ETOH_START, 0 );
+	MyMode = MODE_IDLE;
+	nvset_socvec1(0X33);   // TEST - Artificially Set Social Vector
+	switch(nvget_badgetype()) {
+	  case NVBT303:
+	  case NVBTHAC:
+	    light_show(LIGHTSHOW_SOCFLASH, 1);
+	    break;
+	  case NVBTSKYGRUNT:
+	    light_show(LIGHTSHOW_SKYGRUNT, 5);
+	    break;
+	  case NVBTSKYENFORCER:
+	    light_show(LIGHTSHOW_SKYENFORCER, 3);
+	    break;
+	  case NVBTSKYSPEAKER:
+	    light_show(LIGHTSHOW_SKYSPEAKER, 5);
+	    break;
+	}
+
 	
 	// 
 	// Main Worker Loop
@@ -139,14 +155,15 @@ void main()
 		set_bit(intcon, TMR0IE);
 		elapsed_msecs += loop_msecs; // Update elapsed time in msecs
 		
+		
 		savemode = MyMode;	// Used to detact mode changes when command processers set new mode
 		switch(MyMode) {
 		  case MODE_IDLE:
 		    if(MRF49XA_Receive_Packet(rfrxbuf,&rfrxlen) == PACKET_RECEIVED) {
 				MRF49XA_Reset_Radio();
-				led_showbin(LED_SHOW_RED, 2);
-				delay_10us(10);
-				led_showbin(LED_SHOW_RED, 0);
+				//led_showbin(LED_SHOW_RED, 2);
+				//delay_10us(10);
+				//led_showbin(LED_SHOW_RED, 0);
 				rfcmd_execute(rfrxbuf, rfrxlen);
 		        
 			}
@@ -155,10 +172,11 @@ void main()
 			}
 			if(elapsed_msecs > (last_beacon + (unsigned long)BEACON_BASE +  ((unsigned long)rnd_randomize()* BEACON_RNDSCALE))) { // time for beacon
 				rfcmd_3send(RFCMD_BEACON, MyBadgeID, nvget_socvec1());
-				led_showbin(LED_SHOW_RED, 4);
-				delay_10us(10);
-				led_showbin(LED_SHOW_RED, 0);
+				//led_showbin(LED_SHOW_RED, 4);
+				//delay_10us(10);
+				//led_showbin(LED_SHOW_RED, 0);
 				last_beacon = elapsed_msecs;
+				rfcmd_clrcden();
 			}
 			break;
 		case MODE_ETOH:
@@ -168,7 +186,7 @@ void main()
 			    tune_startsong(SONG_BUZZER);
 			    break;
 			  case REWARD_TIPSY: 
-			    tune_startsong(SONG_DYING);
+			    tune_startsong(SONG_PEWPEW);
 			    break;
 			  case REWARD_DRUNK:
 			    tune_startsong(SONG_CACTUS);
@@ -177,7 +195,7 @@ void main()
 			 }
 			 MyMode = MODE_IDLE;
 		 
-			 light_show(LIGHTSHOW_RAINBOW, 5);
+			 light_show(LIGHTSHOW_SOCFLASH, 5);
 			 break;	 
 	      }
 	      break;

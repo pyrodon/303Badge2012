@@ -23,3 +23,11 @@
 #define RFCMD_PERF1		0x24  // Special Performance (**)
 
 
+
+//
+// 
+// Fuctions
+extern void rfcmd_3send(unsigned char , unsigned char , unsigned char );
+extern void rfcmd_execute(unsigned char *, unsigned char );
+extern void rfcmd_clrcden();
+extern unsigned short rfcmd_getdensity();

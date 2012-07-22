@@ -210,10 +210,13 @@ extern unsigned char lightshowrun;
 #define NUMINTENSITY  8
 #define LIGHTSHOW_OFF	0
 #define LIGHTSHOW_CEYLON 1
-#define LIGHTSHOW_FLASH 2
+#define LIGHTSHOW_SOCFLASH 2
 #define LIGHTSHOW_COUNTDOWN 3
 #define LIGHTSHOW_RAINBOW 4
 #define LIGHTSHOW_DONGS 5
+#define LIGHTSHOW_SKYSPEAKER 6
+#define LIGHTSHOW_SKYENFORCER 7
+#define LIGHTSHOW_SKYGRUNT 8
 
 // sub_sample.c
 extern void sample_play();
@@ -224,9 +227,11 @@ extern unsigned char playsample;
 
 
 
-#define NVBT303		0x00		// 303 Badge
-#define NVBTHAC		0x01		// Denhac Badge
-#define NVBTSKY		0x02		// Skytalks Badge	
+#define NVBT303				0x00		// 303 Badge
+#define NVBTHAC				0x01		// Denhac Badge
+#define NVBTSKYGRUNT		0x02		// Skytalks Badge	
+#define NVBTSKYENFORCER		0x03		// Skytalks Badge
+#define NVBTSKYSPEAKER		0x04		// Skytalks Badge
 
 
 #define NVPRMUSER		0x00   // Plain old user
@@ -252,10 +257,9 @@ extern void proc_btn1();
 // sub_random.c
 extern void init_rnd(unsigned char,unsigned char ,unsigned char );
 extern unsigned char rnd_randomize();
+extern void init_rndi(unsigned char,unsigned char ,unsigned char );
+extern unsigned char rnd_randomizei();
 
-//
-extern void rfcmd_3send(unsigned char , unsigned char , unsigned char );
-extern void rfcmd_execute(unsigned char *, unsigned char );
 
 
 //
