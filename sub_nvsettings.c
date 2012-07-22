@@ -55,13 +55,6 @@ void nvsavebuf()
 	flash_write((unsigned long)NVBASE, nvolbuf);
 	
 	delay_100us(2);
-	if(flash_verify((unsigned long)NVBASE, nvolbuf)) {
-		led_showbin(LED_SHOW_GRN, 0x08);
-	}
-	else {
-		led_showbin(LED_SHOW_RED, 0x08);
-	}
-	delay_100us(10);
 
 }
 

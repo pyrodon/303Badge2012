@@ -582,9 +582,9 @@ void tune_startsong(unsigned char songnum)
 {
 	playsong = 0;		// Terminate any other playing song
 	
-	songselect(songnum);  // Select the right song
-	tune_init();
-	
+	if(songnum < 0xff)
+		songselect(songnum);  // Select the right song
+
 	sound_amp_on();
 	delay_10us(10);
 	sound_i2c_reset();
@@ -592,6 +592,7 @@ void tune_startsong(unsigned char songnum)
 	sound_i2c_reset();
 	delay_10us(5);
 	sound_hsstart();
+	tune_init();
 }
 
 void tune_songwork()

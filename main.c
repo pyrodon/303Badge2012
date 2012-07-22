@@ -5,7 +5,7 @@
 #include "ext_chiptunesong.h"
 #include "sub_rfcmd.h"
 
-#define SPEEDTEST
+//#define SPEEDTEST
 
 #ifdef SPEEDTEST			// Speeds up some of the user experience parameters for testing
 #define TIME_ADDR 2
@@ -26,25 +26,29 @@ volatile unsigned char intr_msecs;
 
 unsigned char MyBadgeID;
 volatile unsigned char MyMode;
+unsigned char MyElev;
 
 unsigned char rfrxbuf[PAYLOAD_MAX];
-unsigned char rftxbuf[PAYLOAD_MAX];
+
 unsigned char rfrxlen;
 
 #ifdef SPEEDTEST
 #define BEACON_BASE (5*1000)		// 5 second beacons
+#define DENSITY_QUORUM 1
 #else
 #define BEACON_BASE (2*60*1000)	// 2 minute beacons
+#define DENSITY_QUORUM 25
 #endif
 #define BEACON_RNDSCALE 8		// Random bias multiplier 8*255 = 2-3 secs 
 unsigned long last_beacon = 0;
 
-#define RXBUFLEN	8
+#define RXBUFLEN	PAYLOAD_MAX
 
 
 
 
 #define DELAYMS	20 
+
 
 void main()
 {
@@ -124,23 +128,13 @@ void main()
 	
 	
 	MyMode = MODE_IDLE;
-	nvset_socvec1(0X33);   // TEST - Artificially Set Social Vector
-	switch(nvget_badgetype()) {
-	  case NVBT303:
-	  case NVBTHAC:
-	    light_show(LIGHTSHOW_SOCFLASH, 1);
-	    break;
-	  case NVBTSKYGRUNT:
-	    light_show(LIGHTSHOW_SKYGRUNT, 5);
-	    break;
-	  case NVBTSKYENFORCER:
-	    light_show(LIGHTSHOW_SKYENFORCER, 3);
-	    break;
-	  case NVBTSKYSPEAKER:
-	    light_show(LIGHTSHOW_SKYSPEAKER, 5);
-	    break;
-	}
+	
+	//nvset_socvec1(0X00);   // TEST - Artificially Set Social Vector
+	modelights();
 
+	//rfcmd_3send(0xc0 | RFCMD_PERF1, MyBadgeID, 0);
+
+	
 	
 	// 
 	// Main Worker Loop
@@ -159,6 +153,11 @@ void main()
 		savemode = MyMode;	// Used to detact mode changes when command processers set new mode
 		switch(MyMode) {
 		  case MODE_IDLE:
+		    if(btn_commandwork(loop_msecs) != BTN_IDLE) {
+				MyMode = MODE_GETCMD;
+				modelights();
+				break;
+		    }
 		    if(MRF49XA_Receive_Packet(rfrxbuf,&rfrxlen) == PACKET_RECEIVED) {
 				MRF49XA_Reset_Radio();
 				//led_showbin(LED_SHOW_RED, 2);
@@ -177,6 +176,7 @@ void main()
 				//led_showbin(LED_SHOW_RED, 0);
 				last_beacon = elapsed_msecs;
 				rfcmd_clrcden();
+				modelights();
 			}
 			break;
 		case MODE_ETOH:
@@ -199,7 +199,23 @@ void main()
 			 break;	 
 	      }
 	      break;
-				     
+	    case MODE_ATTEN:
+			if(MRF49XA_Receive_Packet(rfrxbuf,&rfrxlen) == PACKET_RECEIVED) {
+				MRF49XA_Reset_Radio();
+				//led_showbin(LED_SHOW_RED, 2);
+				//delay_10us(10);
+				//led_showbin(LED_SHOW_RED, 0);
+				rfcmd_execute(rfrxbuf, rfrxlen);
+		        
+			}
+			modelights();
+	      break;
+	    case MODE_GETCMD:
+	      if (btn_commandwork( loop_msecs) == BTN_DONE) {
+			MyMode = MODE_IDLE;
+			modelights();
+		  }
+	      break;	     
 		    
 		} // switch
 		  
@@ -346,5 +362,56 @@ void interrupt( void )
 
 }
 	
+
+
+void modelights()  // Call whenever MyMode, TmpPrivs changes, density
+{
+	static unsigned char oldden;
+	static unsigned char oldelev;
+	
+	switch(MyMode) {
+	  case MODE_IDLE:
+		switch(nvget_badgetype()) {
+		  case NVBT303:
+		  case NVBTHAC:
+			if(MyElev) {
+				light_show(LIGHTSHOW_DONGS, 2);
+				if(!oldelev) sample_play();
+				oldelev = 1;
+			}
+			else {
+			    oldelev = 0;
+				if(rfcmd_getdensity() > DENSITY_QUORUM) {
+					light_show(LIGHTSHOW_SOCFLASH, 1);
+					if(!oldden & !playsong) tune_startsong(SONG_303);
+					oldden = 1;
+				}
+				else {
+					light_show(LIGHTSHOW_SOCFLASH, 3);
+					oldden = 0;
+				}
+			}
+			break;
+		  case NVBTSKYGRUNT:
+			light_show(LIGHTSHOW_SKYGRUNT, 5);
+			break;
+		  case NVBTSKYENFORCER:
+			light_show(LIGHTSHOW_SKYENFORCER, 3);
+			break;
+		  case NVBTSKYSPEAKER:
+			light_show(LIGHTSHOW_SKYSPEAKER, 5);
+			break;
+		 } // switch nvget_badgetype
+		 break;
+	  case MODE_ATTEN:
+	    light_show(LIGHTSHOW_CEYLON, 5);
+	    break;
+	  case MODE_GETCMD:
+	    light_show(LIGHTSHOW_OFF, 5);
+	    break;
+	}  // Switch mymode
+}
+			 
+
 
 	

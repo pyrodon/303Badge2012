@@ -236,6 +236,10 @@ void light_show(unsigned char which, unsigned char factor)
 {
     
     speedfactor = factor;
+    if(which == curshow) {
+		return;
+	}
+	curshow = which;
   
   
     light_init();
@@ -246,13 +250,13 @@ void light_show(unsigned char which, unsigned char factor)
 	    light_set(0, 4, 0, 0);
 	    goto ceycomm;
 	  case LIGHTSHOW_SKYSPEAKER:
-	    light_set(0, 2, 0, 5);
+	    light_set(0, 0,5,0);
 	    goto ceycomm;
 	  case LIGHTSHOW_SKYENFORCER:
 	    light_set(0, 7, 3, 0);
 	    goto ceycomm;
 	  case LIGHTSHOW_SKYGRUNT:
-	    light_set(0, 0,5,0);
+	    light_set(0, 2, 0, 5);
 ceycomm:
 	    
 	    dir = 1; // For this one, it control the direction. INitially up

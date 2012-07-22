@@ -153,6 +153,8 @@ extern unsigned char playsong;
 #define MODE_EXEC		3	// Executing Transient Command
 #define MODE_ATTEN		4	// Attention mode.. Suspend outgoing RF and Buttons
 #define MODE_PRICMD		5	// Executing priority command
+void modelights();
+
 
 //
 //
@@ -252,6 +254,12 @@ extern unsigned char nvget_socvec1();
 extern void nvset_socvec1(unsigned char );
 
 // sub_btn.c
+
+#define BTN_IDLE	0
+#define BTN_WORKING 1
+#define BTN_DONE	2
+
+extern unsigned char btn_commandwork(unsigned char);
 extern void proc_btn1();
 
 // sub_random.c

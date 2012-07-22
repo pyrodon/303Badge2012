@@ -1,4 +1,4 @@
 [Compiler]
-Extra=
+Extra=-d SPEEDTEST -d ROOTBADGE 
 [Linker]
 Extra=-swcs 8 4  flash.pic18.lib

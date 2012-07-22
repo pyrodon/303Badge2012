@@ -44,6 +44,8 @@ unsigned char SongSelXtraVol;
 
 void songselect(unsigned char songix)
 {
+    playsong = 0;  // terminate any other playing song
+    
 	switch(songix) {
 	  CASESEL(SIREN, 93, 7);
 	  CASESEL(SECRET, 93, 7);
@@ -55,13 +57,13 @@ void songselect(unsigned char songix)
 	  CASESEL(NYAN, 95, 8);
 	  CASESEL(KRY0, 93, 8);
 	  CASESEL(KLAXON, 93, 7);
-	  CASESEL(JOURNEY3, 93, 7);
-	  CASESEL(JOURNEY2, 93, 7);
-	  CASESEL(JOURNEY1, 93, 7);
+	  CASESEL(JOURNEY3, 93, 8);
+	  CASESEL(JOURNEY2, 93, 8);
+	  CASESEL(JOURNEY1, 93, 8);
 	  CASESEL(DYING, 93, 7);
 	  CASESEL(CHIRP2, 93, 6);
 	  CASESEL(CHIRP1, 93, 6);
-	  CASESEL(CANTINA, 93, 7);
+	  CASESEL(CANTINA, 93, 8);
 	  CASESEL(CACTUS, 95, 7);
 	  CASESEL(BUZZER, 93, 7);
 	  CASESEL(303, 93, 7);
