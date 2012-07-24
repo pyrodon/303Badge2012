@@ -17,11 +17,19 @@
 #define RFCMD_PLAYSIREN	0x13  // Siren
 
 
-#define RFCMD_ADMNSOC	0x20  // Set Social vector bit (**)
-#define RFCMD_ADMNSPEC	0x21  // Send Special (**)
-#define RFCMD_DON1		0x22  // Special Reserved (**)
-#define RFCMD_ATTEN		0x23  // Special Alert (**)
-#define RFCMD_PERF1		0x24  // Special Performance (**)
+#define RFCMD_ADMNSOC0	0x20  // Set Social vector bit (**)
+#define RFCMD_ADMNSOC1	0x21  // Set Social vector bit (**)
+#define RFCMD_ADMNSOC2	0x22  // Set Social vector bit (**)
+#define RFCMD_ADMNSOC3	0x23  // Set Social vector bit (**)
+#define RFCMD_ADMNSOC4	0x24  // Set Social vector bit (**)
+#define RFCMD_ADMNSOC5	0x25  // Set Social vector bit (**)
+#define RFCMD_ADMNSOCC  0x28  // Clear Vec
+
+#define RFCMD_ESET		0x30  		// Send Special El (**)
+#define RFCMD_ECLR		0x31  		// 
+#define RFCMD_DON1		0x34  // Special Reserved (**)
+#define RFCMD_ATTEN		0x35  // Special AttenMode (**)
+#define RFCMD_PERF1		0x36  // Special Performance (**)
 
 
 

@@ -32,18 +32,32 @@ unsigned char rfrxbuf[PAYLOAD_MAX];
 
 unsigned char rfrxlen;
 
+unsigned char have_quorum;	
+
 #ifdef SPEEDTEST
 #define BEACON_BASE (5*1000)		// 5 second beacons
-#define DENSITY_QUORUM 1
+#define DENSITY_QUORUM_HI	3
+#define DENSITY_QUORUM_LO   1 
+#define ELEVATE_BASE (5 * 60 * 1000)
+#define ELEVATE_VAR  1
+#define ELEVATE_DUR  30000
 #else
 #define BEACON_BASE (2*60*1000)	// 2 minute beacons
-#define DENSITY_QUORUM 25
+#define DENSITY_QUORUM_HI 20
+#define DENSITY_QUORUM_LO 12
+#define ELEVATE_BASE (2 * 60 * 60 * 1000)
+#define ELEVATE_VAR  20000
+#define ELEVATE_DUR  (5*60*1000)
 #endif
 #define BEACON_RNDSCALE 8		// Random bias multiplier 8*255 = 2-3 secs 
 unsigned long last_beacon = 0;
 
 #define RXBUFLEN	PAYLOAD_MAX
 
+unsigned char lastmode;
+
+unsigned long elevatemsecs;
+unsigned long attelapsed;
 
 
 
@@ -133,6 +147,8 @@ void main()
 	modelights();
 
 	//rfcmd_3send(0xc0 | RFCMD_PERF1, MyBadgeID, 0);
+	
+	elevatemsecs = elapsed_msecs + ELEVATE_BASE + (unsigned long) rnd_randomize() * ELEVATE_VAR;
 
 	
 	
@@ -153,9 +169,10 @@ void main()
 		savemode = MyMode;	// Used to detact mode changes when command processers set new mode
 		switch(MyMode) {
 		  case MODE_IDLE:
-		    if(btn_commandwork(loop_msecs) != BTN_IDLE) {
+		    if(btn_commandwork(loop_msecs) == BTN_WORKING) {
 				MyMode = MODE_GETCMD;
 				modelights();
+				//light_pause();
 				break;
 		    }
 		    if(MRF49XA_Receive_Packet(rfrxbuf,&rfrxlen) == PACKET_RECEIVED) {
@@ -166,7 +183,7 @@ void main()
 				rfcmd_execute(rfrxbuf, rfrxlen);
 		        
 			}
-			if(savemode != MyMode) {	// Don't process remainder of idle loop if state change
+			if(savemode != MyMode) {	// Don't process remainder of idle switch if state change
 				break;
 			}
 			if(elapsed_msecs > (last_beacon + (unsigned long)BEACON_BASE +  ((unsigned long)rnd_randomize()* BEACON_RNDSCALE))) { // time for beacon
@@ -176,6 +193,18 @@ void main()
 				//led_showbin(LED_SHOW_RED, 0);
 				last_beacon = elapsed_msecs;
 				rfcmd_clrcden();
+				if(have_quorum) {
+					if(rfcmd_getdensity() <= DENSITY_QUORUM_LO) {
+						have_quorum = 0;
+						 if(!playsong) tune_startsong(SONG_CHIRP2);
+					}
+				}
+				else {
+					if(rfcmd_getdensity() >= DENSITY_QUORUM_HI) {
+						have_quorum = 1;
+						if (!playsong) tune_startsong(SONG_303);
+					}
+				}
 				modelights();
 			}
 			break;
@@ -200,6 +229,14 @@ void main()
 	      }
 	      break;
 	    case MODE_ATTEN:
+	        if(MyMode != lastmode) {
+				attelapsed  = 0;
+			}
+			attelapsed += loop_msecs;
+			if(attelapsed > 120000) {
+				MyMode = MODE_IDLE;
+			}
+			
 			if(MRF49XA_Receive_Packet(rfrxbuf,&rfrxlen) == PACKET_RECEIVED) {
 				MRF49XA_Reset_Radio();
 				//led_showbin(LED_SHOW_RED, 2);
@@ -211,7 +248,7 @@ void main()
 			modelights();
 	      break;
 	    case MODE_GETCMD:
-	      if (btn_commandwork( loop_msecs) == BTN_DONE) {
+	      if (btn_commandwork( loop_msecs) != BTN_WORKING) {
 			MyMode = MODE_IDLE;
 			modelights();
 		  }
@@ -221,7 +258,23 @@ void main()
 		  
 		tune_songwork();					// Worker thread for songs				 
 		light_animate(loop_msecs);			// worker thread for lights
+		
+		if(MyElev) {
+			if(elapsed_msecs > (elevatemsecs + ELEVATE_DUR)) {
+			    MyElev = 0;
+			    elevatemsecs = elapsed_msecs + ELEVATE_BASE + (unsigned long) rnd_randomize() * ELEVATE_VAR;
+			    modelights();
+			}
+		} else {
+			if(elapsed_msecs > elevatemsecs) {
+				MyElev = 1;
+				sample_play();
+				modelights();
+			}
+		}
 
+				
+		lastmode = MyMode;
 			
 		
 		// led_showbin(LED_SHOW_BLU, (unsigned char)(ELAPSED_SECS() & 0x7f));
@@ -366,8 +419,7 @@ void interrupt( void )
 
 void modelights()  // Call whenever MyMode, TmpPrivs changes, density
 {
-	static unsigned char oldden;
-	static unsigned char oldelev;
+	
 	
 	switch(MyMode) {
 	  case MODE_IDLE:
@@ -376,19 +428,13 @@ void modelights()  // Call whenever MyMode, TmpPrivs changes, density
 		  case NVBTHAC:
 			if(MyElev) {
 				light_show(LIGHTSHOW_DONGS, 2);
-				if(!oldelev) sample_play();
-				oldelev = 1;
 			}
 			else {
-			    oldelev = 0;
-				if(rfcmd_getdensity() > DENSITY_QUORUM) {
+				if(have_quorum) {
 					light_show(LIGHTSHOW_SOCFLASH, 1);
-					if(!oldden & !playsong) tune_startsong(SONG_303);
-					oldden = 1;
 				}
 				else {
-					light_show(LIGHTSHOW_SOCFLASH, 3);
-					oldden = 0;
+					light_show(LIGHTSHOW_SOCFLASH, 3);				
 				}
 			}
 			break;
@@ -404,7 +450,10 @@ void modelights()  // Call whenever MyMode, TmpPrivs changes, density
 		 } // switch nvget_badgetype
 		 break;
 	  case MODE_ATTEN:
-	    light_show(LIGHTSHOW_CEYLON, 5);
+	    light_show(LIGHTSHOW_RAINBOW, 5);
+	    break;
+	  case MODE_ETOH:
+	    light_show(LIGHTSHOW_OFF, 5);
 	    break;
 	  case MODE_GETCMD:
 	    light_show(LIGHTSHOW_OFF, 5);

@@ -91,66 +91,57 @@ unsigned char  etoh_breathtest(unsigned char startkill, unsigned short msecs)
 	    break;
 	  case 1: // Starting Process
 	    light_init();	// Turn off lights
-	    //light_set(0,4,0,0); // Turn on red light to indicate wait
-		//light_set(1,4,0,0); // Turn on red light to indicate wait
-		//light_set(2,4,0,0); // Turn on red light to indicate wait
-		//light_set(3,4,0,0); // Turn on red light to indicate wait
+	    light_set(0,4,0,0); // Turn on red light to indicate wait
+		light_set(1,4,0,0); // Turn on red light to indicate wait
+		light_set(2,4,0,0); // Turn on red light to indicate wait
+		light_set(3,4,0,0); // Turn on red light to indicate wait
 	  
 	    etoh_heater_on(); // Turn on heater
 	    mstate = 2; 	  // Advance to next stage
 	    break;
 	  case 2:
 	    if(elapsed < 7000) return(ETOH_WORKING); // Wait 9.5 seconds for sensor to warm up
-	    //light_set(3,0,0,0); // Turn on red light to indicate wait
-	    //etoh_heater_off();
+	    light_set(3,0,0,0); // Turn of  red light to indicate coutdown
+	   
 	    measure4 = etoh_get();
-	    //etoh_heater_on();
-	    light_showbin((unsigned char) (etoh_get() >> 0) & 0x7f, 3, 0, 0);
+	   
 	    mstate = 3;
 	    break;
 	  case 3:
 	    if(elapsed < 8000) return(ETOH_WORKING); // Wait 9.5 seconds for sensor to warm up
-	   // light_set(2,0,0,0); // Turn on red light to indicate wait
-	    //etoh_heater_off();
+	    light_set(2,0,0,0); // Turn of  red light to indicate coutdown
+	 
 	    measure4 += etoh_get();
-	    //etoh_heater_on();
-	    light_showbin((unsigned char) (etoh_get() >> 0) & 0x7f, 3, 0, 0);
+	
 	    mstate = 4;
 	    break;	    
 	  case 4:
 	    if(elapsed < 9000) return(ETOH_WORKING); // Wait 9.5 seconds for sensor to warm up
-	    //light_set(1,0,0,0); // Turn on red light to indicate wait
-	    //etoh_heater_off();
+	    light_set(1,0,0,0); //Turn of  red light to indicate coutdown
+	    
 	    measure4 += etoh_get();
-	    //etoh_heater_on();
-	    light_showbin((unsigned char) (etoh_get() >> 0) & 0x7f, 3, 0, 0);
+	  
 	    mstate = 5;
 	    break;	 
 	  case 5:
 	    if(elapsed < 10000) return(ETOH_WORKING); // Wait 9.5 seconds for sensor to warm up
-	    //etoh_heater_off();
+	  
 	    measure4 += etoh_get();
-	    //etoh_heater_on();
-	    light_showbin((unsigned char) (etoh_get() >> 0) & 0x7f, 3, 0, 0);
+	
 	    measure4 >>= 2;			// Take 4 readings and divide by 4
 	    etoh_baseline_val = measure4;  // Save - not sure if gonna use
 	    
-	    // Calculate Resistance and 125ppm Threshold
-	    //etoh_r2_resistance = ((unsigned long) ETOH_R1 * (unsigned long) measure4) / 
-	    //  ( (unsigned long) 1024 - (unsigned long) measure4 );
-	      
-	    //etoh_r2_resistance = (etoh_r2_resistance * 2) / 3 ;  // Sensor is defined to have 1/3 resistance at 125ppm
-	    //etoh_125ppm_threshold_val = (unsigned short) (((long) 1024 * etoh_r2_resistance) / 
-	    //  (etoh_r2_resistance + (long) ETOH_R1));
-	    etoh_125ppm_threshold_val = etoh_baseline_val - 4;
-	    //etoh_mid_val = (etoh_baseline_val + etoh_125ppm_threshold_val) >> 1;
-	    etoh_mid_val = etoh_baseline_val - 2;
+	  
+	 
+	    etoh_125ppm_threshold_val = etoh_baseline_val - 20;
+	    
+	    etoh_mid_val = etoh_baseline_val - 15;
 	    
 	    //light_init();
-	    light_set(0,0,4,0);    // Green light
-	    light_set(1,0,4,0);    // Green light
-	    light_set(2,0,4,0);    // Green light
-		light_set(3,0,4,0);    // Green light
+	    //light_set(0,0,4,0);    // Green light
+	    //light_set(1,0,4,0);    // Green light
+	    //light_set(2,0,4,0);    // Green light
+		//light_set(3,0,4,0);    // Green light
 
 	    
 	    mstate = 10;
@@ -161,18 +152,18 @@ unsigned char  etoh_breathtest(unsigned char startkill, unsigned short msecs)
 			mstate = 20;
 			break;
 		 }
-		 //etoh_heater_off();
+		
 		 measureblow = etoh_get();
-		 //etoh_heater_on();
-		 light_showbin((unsigned char) (measureblow >> 0) & 0x7f, 0, 3, 0);
+		
+		 light_showbin((unsigned char) measureblow & 0x7f, 0, 3, 0);
 		 if((measureblow < etoh_125ppm_threshold_val) && (etoh_reward < REWARD_DRUNK)) {
 			etoh_reward = REWARD_DRUNK;
-			//light_set(2,4,0,0);
+			
 			mstate = 20;
 		 }
 		 else if((measureblow < etoh_mid_val) && (etoh_reward < REWARD_TIPSY)) {
 			etoh_reward = REWARD_TIPSY;
-			//light_set(6,4,4,0);
+			
 		 }
 		 break;
 		 

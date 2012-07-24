@@ -10,13 +10,16 @@ static unsigned short lastbeacon_density;
 
 extern unsigned char MyBadgeID;
 extern unsigned char MyElev;
+extern unsigned char MyMode;
+extern unsigned long elapsed_msecs;
 
 unsigned char lastrfsender;
+unsigned char mysoc;
 
 void rfcmd_3send(unsigned char cmd, unsigned char parm1, unsigned char parm2)
 {
 
-	if(nvget_badgeperm() & NBPRMROOT) {
+	if(nvget_badgeperm() & NBPRMDHAC) {
 		cmd |= 0x80;
 	}
 	if((nvget_badgeperm() & NBPRMELEV) || MyElev) {
@@ -32,7 +35,13 @@ void rfcmd_3send(unsigned char cmd, unsigned char parm1, unsigned char parm2)
 	
 }
 
-extern void proc_beacon_std(unsigned char );
+extern void std_proc_beacon(unsigned char, unsigned char );
+extern unsigned char std_imaslut();
+
+
+extern unsigned long clear_chlam ;
+extern unsigned long clear_syph ;
+extern unsigned long clear_ghon;
 
 void rfcmd_execute(unsigned char *rbuf, unsigned char rlen)
 {
@@ -52,6 +61,7 @@ void rfcmd_execute(unsigned char *rbuf, unsigned char rlen)
 	
 	
 	if(cmd != RFCMD_BEACON) {
+	
 		if(!(crc&0x80)) {
 			if(rx_socvec != MyBadgeID) {
 				return;
@@ -61,13 +71,26 @@ void rfcmd_execute(unsigned char *rbuf, unsigned char rlen)
 				return;
 			}
 		}
+		if((crc == 0) && (std_imaslut() == 0)) {
+			return;
+		}
 	}
+	
+	if(cmd != RFCMD_BEACON) {
+			lastrfsender = sender;
+	}
+	
+	
+	
 	
 	switch (cmd) {
 	  case RFCMD_BEACON:
-	    //sound_beep_polled();
-	     proc_beacon_std(rx_socvec);
+	  
+	    std_proc_beacon(rx_socvec, sender);
 	    curbeacon_density++;
+	    break;
+	  case RFCMD_PLAYDONG: // Dong
+	    sample_play();
 	    break;
 	  case RFCMD_PLAYRICK:  // Rick Roll
 	    songselect(SONG_RICK);
@@ -80,7 +103,7 @@ void rfcmd_execute(unsigned char *rbuf, unsigned char rlen)
 	    songselect(SONG_RAINING);
 	    goto songcommon;
 	  case RFCMD_PLAYJOUR:  // Journey Don't Stop Believing (main)
-	    if(!(crc & 0x80)) break;
+	    if(!(crc & 0xc0)) break;
 	    songselect(SONG_JOURNEY1);
 	    goto songcommon;
 	  case RFCMD_PLAYCANT:  // Star Wars Cantina
@@ -90,7 +113,7 @@ void rfcmd_execute(unsigned char *rbuf, unsigned char rlen)
 	    songselect(SONG_SECRET);
 	    goto songcommon;
 	  case RFCMD_PLAYKRY0:  // Long Ass Chiptune Annoyance Song 
-	    if(!(crc & 0x80)) break;
+	    if(!(crc & 0xc0)) break;
 	    songselect(SONG_KRY0);
 	    goto songcommon;	
 	  case RFCMD_PLAYPAC:   // Pacman Sound
@@ -108,14 +131,48 @@ songcommon:
         tune_startsong(0xff);	// Start song with previously selected items. 
         break;
 	
-	  case RFCMD_ADMNSOC:   // Set Social vector bit (**)
+	  case RFCMD_ADMNSOC0:   // Set Social vector bit (**)
+	  case RFCMD_ADMNSOC1:   // Set Social vector bit (**)
+	  case RFCMD_ADMNSOC2:   // Set Social vector bit (**)
+	  case RFCMD_ADMNSOC3:   // Set Social vector bit (**)
+	  case RFCMD_ADMNSOC4:   // Set Social vector bit (**)
+	  case RFCMD_ADMNSOC5:   // Set Social vector bit (**)
+	    if((crc & 0x80) == 0) break;
+	    
+		mysoc = nvget_socvec1();
+		mysoc |= (1<< (cmd & 0x07));
+		if(cmd & 0x01) clear_chlam = elapsed_msecs + (3600*1000);
+		if(cmd & 0x02) clear_syph = elapsed_msecs + (3600*1000);
+		if(cmd & 0x03) clear_ghon = elapsed_msecs + (3600*1000);
+		nvset_socvec1(mysoc);
+		nvsavebuf();
 	    break;
-	  case RFCMD_ADMNSPEC:  // Send Special (**)
+	  case RFCMD_ADMNSOCC:   // Clear Social Vector Bit
+	    if((crc & 0x80) == 0) break;
+	    nvset_socvec1(0);	// Cured
+	    nvsavebuf();
+	    break;
+	  case RFCMD_ESET:  // Send Special (**)
+	    if((crc & 0x80) == 0) break;
+	    mysoc = nvget_badgeperm();
+	    mysoc |= NBPRMELEV;
+	    nvset_badgeperm(mysoc);
+	    nvsavebuf();
+	    break;
+	  case RFCMD_ECLR:  // Send Special (**)
+	    if((crc & 0x80) == 0) break;
+	    mysoc = nvget_badgeperm();
+	    mysoc &= ~NBPRMELEV;
+	    nvset_badgeperm(mysoc);
+	    nvsavebuf();
 	    break;
 	  case RFCMD_DON1:      // Special Reserved (**)
+		  foo();
 	    break;
 	  case RFCMD_ATTEN:     // Special Alert (**)
 	    if(!(crc & 0x80)) break;
+	      MyMode = MODE_ATTEN;
+	      modelights();
 	    break;
 	  case RFCMD_PERF1:     // Special Performance (**)
 	    if(!(crc & 0x80)) break;
@@ -131,11 +188,8 @@ songcommon:
 
 	} // switch cmd		
 	
-	if((cmd != RFCMD_BEACON) && (cmd < RFCMD_ADMNSOC)) {
-	    lastrfsender = sender;
-	}
-	else {
-		lastrfsender = 0;
+	if(cmd != RFCMD_BEACON) {
+			lastrfsender = sender;
 	}
 	
 }

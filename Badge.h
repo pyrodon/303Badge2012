@@ -94,7 +94,7 @@
 //
 //  FUNCTION EXTERNAL DEFINITIONS
 //
-
+#define foo()   //
 //
 // In File: mcu_initcontrol.c (MCU initialization  and  runtime utils
 //
@@ -238,7 +238,7 @@ extern unsigned char playsample;
 
 #define NVPRMUSER		0x00   // Plain old user
 #define NBPRMELEV		0x01   // Elevated User
-#define NBPRMROOT		0x02   // Master User (Root)
+#define NBPRMDHAC		0x02   // Read Only User
 
 
 

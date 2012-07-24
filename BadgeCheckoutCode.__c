@@ -14,7 +14,7 @@ Config=1
 Last ExtIdx=7
 Last Dir=C:\Users\dkark\Documents\GitHub\303Badge2012\
 [Files]
-Count=22
+Count=23
 File0=..\..\..\..\..\..\..\Program Files\SourceBoost\include\PIC18F67J11.h
 File1=Badge.h
 File2=BadgePicConfig.h
@@ -37,6 +37,7 @@ File18=sub_random.c
 File19=sub_rfcmd.c
 File20=sub_rfcmd.h
 File21=socialproc.c
+File22=sub_btncmd.c
 [Tools]
 BoostDir=C:\Program Files\SourceBoost\
 Programmer=
