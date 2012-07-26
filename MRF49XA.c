@@ -1,5 +1,6 @@
-
-
+// RF Subsystem.. Adapted for this project by Don Kark
+//
+// Originally supplied as a MicroChip Reference Application Note. 
 
 /*********************************************************************
 * FileName:		 MRF49XA.c 
