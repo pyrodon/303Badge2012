@@ -1,6 +1,11 @@
 #include <system.h>
 #include "Badge.h"
 
+// Chiptunes Subsystem. Adapted from  from Kry0 (Linus Akeson) Hardware Chiptunes Project
+// http://www.linusakesson.net/hardware/chiptune.php
+// 
+// Adapted for MicroChip Architecture and Multiple Tunes by Don Kark
+
 #include "ext_chiptunesong.h" 
 
 

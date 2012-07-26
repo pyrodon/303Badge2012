@@ -1,3 +1,45 @@
+////////////////////////////////////////////////////////////////////////////////////////
+// The 303 Defcon Badge Project for 2012
+// 
+// This is a hardware and software platform that can be used to make a cool badge
+// It includes lightshow, sound DAC, and chiptunes subsystem
+// Alcohol sensor, and an RF communciation system. 
+// The software includes the ability to access functions locally, and remotely given
+// sufficient badge privilege, it also has an STD simulator that probabalistically
+// causes badges to infect other badges through the beacon subsystem. 
+////////////////////////////////////////////////////////////////////////////////////////
+//
+// Credits:
+//    Badge Concept: Don Kark (Th3D0n) and Mar Williams
+//	  Hardware Design: Don Kark
+//    Software: Don Kark
+//    Case Concept and Design: Mar Williams and Trev Jackson
+//    Chiptunes Composer/Arranger: Steve Pordon
+//
+//    Badge Production: Mar Williams, Fred Roybal, Sockwell, and numerous other 303
+//        and DenHac Supporters.
+//
+//  Thank you to our primary sponsors who provided support to the project:
+//     Dark Tangent
+//     Kryus
+// 
+//  As well as other key sponsors and supporters:
+//    moose
+//    Peak Security
+//    y3t1
+//    Shaggy
+//    FAWCR
+//    Shapewerks
+//
+//  Finally acknowledgement for code that was adapted for use in this project
+//   Microchip MRF49XA Reference Code
+//   "Hardware Chiptune Project" code release by Linus Akeson (Kry0). Used by permission. 
+//      http://www.linusakesson.net/hardware/chiptune.php
+//
+//  (c) 2012, Don Kark (Th3D0n)
+//
+//////////////////////////////////////////////////////////////////////////////////////
+
 #include <system.h>
 #include "BadgePicConfig.h"
 #include "Badge.h"
@@ -43,21 +85,22 @@ unsigned char have_quorum;
 #define ELEVATE_DUR  30000
 #else
 #define BEACON_BASE (2*60*1000)	// 2 minute beacons
-#define DENSITY_QUORUM_HI 20
-#define DENSITY_QUORUM_LO 12
-#define ELEVATE_BASE (2 * 60 * 60 * 1000)
-#define ELEVATE_VAR  20000
-#define ELEVATE_DUR  (5*60*1000)
+#define DENSITY_QUORUM_HI 20		// 20 people in range
+#define DENSITY_QUORUM_LO 12		// 12 people in range
+#define ELEVATE_BASE (2 * 60 * 60 * 1000)   // Privilege elevation about every 2 hours
+#define ELEVATE_VAR  20000					// + up to 255 * 20 secs
+#define ELEVATE_DUR  (5*60*1000)			// And will last 5 minutes
 #endif
-#define BEACON_RNDSCALE 8		// Random bias multiplier 8*255 = 2-3 secs 
+#define BEACON_RNDSCALE 8		// Random bias multiplier 8*255 = 2-3 secs (introduce some jitter)
+								// So beacons get out of each other's way if simultaneous
 unsigned long last_beacon = 0;
 
-#define RXBUFLEN	PAYLOAD_MAX
+#define RXBUFLEN	PAYLOAD_MAX	// Based on Microchip sample code. 
 
-unsigned char lastmode;
+unsigned char lastmode;			
 
-unsigned long elevatemsecs;
-unsigned long attelapsed;
+unsigned long elevatemsecs;		// How long we've been elevated
+unsigned long attelapsed;		// How long we've been in "attention" mode. 
 
 
 
@@ -105,16 +148,23 @@ void main()
     // the binary number will show in green if the badge is < 128 and red if >  
     // 128 with the badge addresses 0 and 128 showing up as nothing (typically illegal 
     // numbers anyway
+    
+    // Note, led_showbin does not interact with the interrupt driven light show well. 
+    // So only use if you may not be in interrupt mode yet of if a show is not running
     delay_s(1);
-    led_showbin(LED_SHOW_RED, nvget_badgetype() | 0x40);
+    led_showbin(LED_SHOW_RED, nvget_badgetype() | 0x40); // Startup Indicator
     delay_10us(100);
     led_showbin(LED_SHOW_RED, 0);
     delay_s(1);
-    led_showbin(LED_SHOW_RED, nvget_badgeperm() | 0x40);
+    led_showbin(LED_SHOW_RED, nvget_badgeperm() | 0x40); // Same
     delay_10us(100);
     led_showbin(LED_SHOW_RED, 0);
     delay_s(1);
     
+    
+    // 
+    // Shows address as described above
+    //
     MyBadgeID = nvget_badgeid();
     led_showbin(MyBadgeID & 0x80 ? LED_SHOW_RED : LED_SHOW_GRN, MyBadgeID & 0x7f );
     delay_s(TIME_ADDR);
@@ -124,7 +174,7 @@ void main()
     
     
     //
-    // Perform POV credits
+    // Perform POV credits (spin the badge on your wrist :)
     //
     led_pov(LED_SHOW_AUTO, TIME_POV);
     
@@ -143,11 +193,11 @@ void main()
 	
 	MyMode = MODE_IDLE;
 	
-	//nvset_socvec1(0X00);   // TEST - Artificially Set Social Vector
-	modelights();
-
-	//rfcmd_3send(0xc0 | RFCMD_PERF1, MyBadgeID, 0);
 	
+	modelights();  // Sets lightshow based on a few state parameters
+
+	
+	// Calculate initial elevation time
 	elevatemsecs = elapsed_msecs + ELEVATE_BASE + (unsigned long) rnd_randomize() * ELEVATE_VAR;
 
 	
@@ -169,12 +219,15 @@ void main()
 		savemode = MyMode;	// Used to detact mode changes when command processers set new mode
 		switch(MyMode) {
 		  case MODE_IDLE:
+		    // If button pressed, handle it
 		    if(btn_commandwork(loop_msecs) == BTN_WORKING) {
 				MyMode = MODE_GETCMD;
 				modelights();
+				playsong = 0;
 				//light_pause();
 				break;
 		    }
+		    // Look for incoming RF packet
 		    if(MRF49XA_Receive_Packet(rfrxbuf,&rfrxlen) == PACKET_RECEIVED) {
 				MRF49XA_Reset_Radio();
 				//led_showbin(LED_SHOW_RED, 2);
@@ -186,11 +239,10 @@ void main()
 			if(savemode != MyMode) {	// Don't process remainder of idle switch if state change
 				break;
 			}
+			// If time to send a beacon, send it. Also process quorum sounds. 
 			if(elapsed_msecs > (last_beacon + (unsigned long)BEACON_BASE +  ((unsigned long)rnd_randomize()* BEACON_RNDSCALE))) { // time for beacon
 				rfcmd_3send(RFCMD_BEACON, MyBadgeID, nvget_socvec1());
-				//led_showbin(LED_SHOW_RED, 4);
-				//delay_10us(10);
-				//led_showbin(LED_SHOW_RED, 0);
+
 				last_beacon = elapsed_msecs;
 				rfcmd_clrcden();
 				if(have_quorum) {
@@ -208,7 +260,7 @@ void main()
 				modelights();
 			}
 			break;
-		case MODE_ETOH:
+		case MODE_ETOH:  // Run the alcohol sensor state machine
 		  if(etoh_breathtest(ETOH_DOWORK,  loop_msecs ) == ETOH_DONE) {  // worker for ETOH
 			switch(etoh_getreward()) {
 			  case REWARD_SOBER:
@@ -229,19 +281,18 @@ void main()
 	      }
 	      break;
 	    case MODE_ATTEN:
+	        // Puts all badges into visual attention mode to see who's in range
 	        if(MyMode != lastmode) {
 				attelapsed  = 0;
 			}
 			attelapsed += loop_msecs;
-			if(attelapsed > 120000) {
+			if(attelapsed > 120000) {	// Stays there 2 min (should be in #def)
 				MyMode = MODE_IDLE;
 			}
 			
 			if(MRF49XA_Receive_Packet(rfrxbuf,&rfrxlen) == PACKET_RECEIVED) {
 				MRF49XA_Reset_Radio();
-				//led_showbin(LED_SHOW_RED, 2);
-				//delay_10us(10);
-				//led_showbin(LED_SHOW_RED, 0);
+			
 				rfcmd_execute(rfrxbuf, rfrxlen);
 		        
 			}
@@ -259,7 +310,7 @@ void main()
 		tune_songwork();					// Worker thread for songs				 
 		light_animate(loop_msecs);			// worker thread for lights
 		
-		if(MyElev) {
+		if(MyElev) {	// Handle the privilege elevation timer
 			if(elapsed_msecs > (elevatemsecs + ELEVATE_DUR)) {
 			    MyElev = 0;
 			    elevatemsecs = elapsed_msecs + ELEVATE_BASE + (unsigned long) rnd_randomize() * ELEVATE_VAR;
@@ -277,106 +328,12 @@ void main()
 		lastmode = MyMode;
 			
 		
-		// led_showbin(LED_SHOW_BLU, (unsigned char)(ELAPSED_SECS() & 0x7f));
+		
 									 
 		
 	}	
 	
-#ifdef NEVER
-	
-    while(1) {
-       led_pov_next(LED_SHOW_AUTO);
-       //autocountdown--;
-       
-
-	   //usb_putchar('A');
-	   
-	   //if(usb_getchar(&retchar) == 0) {
-	  //     for(soundcount=0; soundcount < 1000; soundcount++) {
-		//		sound_val_polled(soundcount&0x01 ? 80 : 0);
-	//	   }
-	  // }
-
-       
-       if ( !autocountdown || !portf.SIG_RF_FUNC_N_I || (MRF49XA_Receive_Packet(&rfrxdata,&rfrxlen) == PACKET_RECEIVED)) {
-			// usb_putchar('B');
-			led_showbin(0,0);
-			autocountdown = 0x20000;
-            MRF49XA_Reset_Radio();
-		    rfrxlen = 1;
-		    if ( !portf.SIG_RF_FUNC_N_I ) {
-		        MRF49XA_Send_Packet(&rftxdata, 1);
-		        MRF49XA_Reset_Radio();
-		    }
-		    
-           	sound_config_polled();
-			tune_init();
-			tune_playsong();
-			sound_config_polled();
-	   }
-	   
-	   if(!portf.SIG_RF_AUXBUT_N_I) {
-
-			led_showbin(0,0);
-			portb.SIG_RB_DISPLED3_O = 1;
-			portc.SIG_RC_DISP_RED_O = 0; // Red light for 10 seconds to allow sensor to head
-			
-			porta.SIG_RA_ETOH_HTR_N_O = 0;  // Turn on Heater
-			
-			delay_s(10);
-			
-			portc.SIG_RC_DISP_RED_O = 1; // Red light for 10 seconds to allow sensor to head
-			portc.SIG_RC_DISP_GRN_O = 0; // Grean light means play
-		
-		    etoh_start = get_etoh();
-		    
-		    for(soundcount=0; soundcount < 8000; soundcount++) {
-				sound_val_polled(soundcount&0x01 ? 80 : 0);
-					etoh_end = get_etoh();
-					if(etoh_start > etoh_end) {
-						etoh_diff = etoh_start - etoh_end;
-					}
-					else {
-						//etoh_diff = etoh_end - etoh_start;
-						etoh_diff = 0;
-						etoh_start = etoh_end;
-					}
-					if(etoh_first) {
-						avg_accum = etoh_diff << 3;
-						etoh_first = 0;
-					}
-					else {
-						avg_accum -= etoh_lastdiff;
-						avg_accum += etoh_diff;
-					}
-					etoh_lastdiff = etoh_diff;
-					
-					etoh_diff = avg_accum<<2; // >> 3;
-					// etoh_diff >>=2;
-					if (etoh_diff > 254) { etoh_diff = 254; }
-					delay_10us(255 - (unsigned char)(etoh_diff & 0xff) );
-				
-			}
-			
-			porta.SIG_RA_ETOH_HTR_N_O = 1; // Turn off Heater
-			portc.SIG_RC_DISP_GRN_O = 1;
-			portb.SIG_RB_DISPLED3_O = 0;
-
-		}
-    }
-	
-	while(1) { 
-
-		FLASHLED;
-		delay_ms(200);
-		if(!portf.SIG_RF_FUNC_N_I) {
-			while(!portf.SIG_RF_FUNC_N_I);
-			sound_config_polled();
-			tune_init();
-			tune_playsong();
-		}
-	}
-#endif	    	
+    	
 }
 
 static unsigned char soundval = 0;
@@ -395,7 +352,8 @@ void interrupt( void )
 		}
 		
 		
-		if (playsong) {
+		if (playsong) {		// Call respective intr drivers. We don't have enough 
+							// Time for all at 8KHz, so this enforces a priority
 		   tune_play_intr();
 		} else if(playsample) {
 			sample_intr();
@@ -404,7 +362,7 @@ void interrupt( void )
 		}
 		
 
-	} else {						// CALL FOR HELP -- UNKNOWN INTERRUPT
+	} else {						// CALL FOR HELP -- UNKNOWN INTERRUPT (DEBUG STUFF)
 		portc.SIG_RC_DISP_GRN_O = 0;
 		portb.SIG_RB_DISPLED3_O = 1;
 		portb.SIG_RB_DISPLED4_O = 1;

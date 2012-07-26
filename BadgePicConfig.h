@@ -1,3 +1,19 @@
+////////////////////////////////////////////////////////////////////////////////////////
+// The 303 Defcon Badge Project for 2012
+// 
+// This is a hardware and software platform that can be used to make a cool badge
+// It includes lightshow, sound DAC, and chiptunes subsystem
+// Alcohol sensor, and an RF communciation system. 
+// The software includes the ability to access functions locally, and remotely given
+// sufficient badge privilege, it also has an STD simulator that probabalistically
+// causes badges to infect other badges through the beacon subsystem. 
+////////////////////////////////////////////////////////////////////////////////////////
+//
+// Please see general credits and information in the main.c file
+//
+//  (c) 2012, Don Kark (Th3D0n)
+//
+////////////////////////////////////////////////////////////////////////////////////////
 #ifndef BADGEPICCONFIG_H
 #define BADGEPICCONFIG_H
 

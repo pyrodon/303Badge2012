@@ -2,7 +2,16 @@
 #################
 ## Sourcebooste IDE
 #################
-Debug/**
+Debug/*.obj
+Debug/*.asm
+Debug/*.map
+Debug/*.lst
+Debug/*.tree
+Debug/*.cof
+Debug/*.casm
+Debug/*.brws
+Debug/*.stat
+
 Release/**
 
 #################
