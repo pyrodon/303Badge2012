@@ -7,6 +7,9 @@
 // The software includes the ability to access functions locally, and remotely given
 // sufficient badge privilege, it also has an STD simulator that probabalistically
 // causes badges to infect other badges through the beacon subsystem. 
+//
+// Native Compiler Used: SourceBoost BoostC (www.sourceboost.com)
+//
 ////////////////////////////////////////////////////////////////////////////////////////
 //
 // Credits:
