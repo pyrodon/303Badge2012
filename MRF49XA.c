@@ -179,6 +179,10 @@ void MRF49XA_Init(){
 void MRF49XA_Send_Packet(unsigned char *data, unsigned char length){
 
 	unsigned char a;
+#ifdef EXTERNAL_AMP
+	portf.SIG_RF_PLAY3 = 1; 		// Turn on optional power amplifier
+	delay_10us(50);
+#endif
 	//---- turn off receiver , enable Tx register
 	SPI_Command(PMCREG);				// turn off the transmitter and receiver
 	SPI_Command(GENCREG | 0x0080);		// Enable the Tx register
@@ -221,6 +225,10 @@ void MRF49XA_Send_Packet(unsigned char *data, unsigned char length){
 	//---- Turn off Tx disable the Tx register
 	SPI_Command(PMCREG | 0x0080);		// turn off Tx, turn on the receiver
 	SPI_Command(GENCREG | 0x0040);		// disable the Tx register, Enable the FIFO
+#ifdef EXTERNAL_AMP
+	delay_10us(3);
+	portf.SIG_RF_PLAY3 = 0; 		// Turn on optional power amplifier
+#endif
 }
 //--------------------------------------------------------------------
 // MRF49XA_Receive_Packet
