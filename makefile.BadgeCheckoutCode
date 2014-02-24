@@ -6,55 +6,55 @@ Debug:
 CC = "C:\Program Files\SourceBoost\boostc_pic18.exe"
 
 Debug\main.obj: main.c BadgePicConfig.h Badge.h MRF49XA.h ext_chiptunesong.h sub_rfcmd.h BadgeCheckoutCode.Debug.__f
-	$(CC) main.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -obj Debug -d _DEBUG
+	$(CC) main.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -d SPEEDTEST -obj Debug -d _DEBUG
 
 Debug\mcu_initcontrol.obj: mcu_initcontrol.c Badge.h BadgeCheckoutCode.Debug.__f
-	$(CC) mcu_initcontrol.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -obj Debug -d _DEBUG
+	$(CC) mcu_initcontrol.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -d SPEEDTEST -obj Debug -d _DEBUG
 
 Debug\sub_sound.obj: sub_sound.c Badge.h BadgeCheckoutCode.Debug.__f
-	$(CC) sub_sound.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -obj Debug -d _DEBUG
+	$(CC) sub_sound.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -d SPEEDTEST -obj Debug -d _DEBUG
 
 Debug\ext_chiptune.obj: ext_chiptune.c Badge.h ext_chiptunesong.h BadgeCheckoutCode.Debug.__f
-	$(CC) ext_chiptune.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -obj Debug -d _DEBUG
+	$(CC) ext_chiptune.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -d SPEEDTEST -obj Debug -d _DEBUG
 
 Debug\MRF49XA.obj: MRF49XA.c MRF49XA.h Badge.h BadgeCheckoutCode.Debug.__f
-	$(CC) MRF49XA.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -obj Debug -d _DEBUG
+	$(CC) MRF49XA.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -d SPEEDTEST -obj Debug -d _DEBUG
 
 Debug\ETOH-Driver.obj: ETOH-Driver.c Badge.h BadgeCheckoutCode.Debug.__f
-	$(CC) ETOH-Driver.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -obj Debug -d _DEBUG
+	$(CC) ETOH-Driver.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -d SPEEDTEST -obj Debug -d _DEBUG
 
 Debug\POV_Test.obj: POV_Test.c Badge.h CharData\Char5x7Data.h CharData\Char5x7Data.x BadgeCheckoutCode.Debug.__f
-	$(CC) POV_Test.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -obj Debug -d _DEBUG
+	$(CC) POV_Test.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -d SPEEDTEST -obj Debug -d _DEBUG
 
 Debug\SerialPort.obj: SerialPort.c Badge.h BadgeCheckoutCode.Debug.__f
-	$(CC) SerialPort.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -obj Debug -d _DEBUG
+	$(CC) SerialPort.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -d SPEEDTEST -obj Debug -d _DEBUG
 
 Debug\sub_lights.obj: sub_lights.c Badge.h BadgeCheckoutCode.Debug.__f
-	$(CC) sub_lights.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -obj Debug -d _DEBUG
+	$(CC) sub_lights.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -d SPEEDTEST -obj Debug -d _DEBUG
 
 Debug\sub_samples.obj: sub_samples.c Badge.h Samples\d2.h BadgeCheckoutCode.Debug.__f
-	$(CC) sub_samples.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -obj Debug -d _DEBUG
+	$(CC) sub_samples.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -d SPEEDTEST -obj Debug -d _DEBUG
 
 Debug\ext_chiptune_songsel.obj: ext_chiptune_songsel.c Badge.h ext_chiptunesong.h SongData\303.h SongData\303.x SongData\buzzer.h SongData\buzzer.x SongData\cactus.h SongData\cactus.x SongData\cantina.h SongData\cantina.x SongData\chirp1.h SongData\chirp1.x SongData\chirp2.h SongData\chirp2.x SongData\dying.h SongData\dying.x SongData\journey1.h SongData\journey1.x SongData\journey2.h SongData\journey2.x SongData\journey3.h SongData\journey3.x SongData\klaxon.h SongData\klaxon.x SongData\kry0.h SongData\kry0.x SongData\nyan.h SongData\nyan.x SongData\orig.h SongData\orig.x SongData\pacman.h SongData\pacman.x SongData\pewpew.h SongData\pewpew.x SongData\raining.h SongData\raining.x SongData\ricktroll.h SongData\ricktroll.x SongData\secret.h SongData\secret.x SongData\siren.h SongData\siren.x BadgeCheckoutCode.Debug.__f
-	$(CC) ext_chiptune_songsel.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -obj Debug -d _DEBUG
+	$(CC) ext_chiptune_songsel.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -d SPEEDTEST -obj Debug -d _DEBUG
 
 Debug\sub_nvsettings.obj: sub_nvsettings.c Badge.h BadgeCheckoutCode.Debug.__f
-	$(CC) sub_nvsettings.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -obj Debug -d _DEBUG
+	$(CC) sub_nvsettings.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -d SPEEDTEST -obj Debug -d _DEBUG
 
 Debug\sub_btn.obj: sub_btn.c Badge.h sub_rfcmd.h BadgeCheckoutCode.Debug.__f
-	$(CC) sub_btn.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -obj Debug -d _DEBUG
+	$(CC) sub_btn.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -d SPEEDTEST -obj Debug -d _DEBUG
 
 Debug\sub_random.obj: sub_random.c BadgeCheckoutCode.Debug.__f
-	$(CC) sub_random.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -obj Debug -d _DEBUG
+	$(CC) sub_random.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -d SPEEDTEST -obj Debug -d _DEBUG
 
 Debug\sub_rfcmd.obj: sub_rfcmd.c Badge.h sub_rfcmd.h MRF49XA.h ext_chiptunesong.h BadgeCheckoutCode.Debug.__f
-	$(CC) sub_rfcmd.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -obj Debug -d _DEBUG
+	$(CC) sub_rfcmd.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -d SPEEDTEST -obj Debug -d _DEBUG
 
 Debug\socialproc.obj: socialproc.c Badge.h BadgeCheckoutCode.Debug.__f
-	$(CC) socialproc.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -obj Debug -d _DEBUG
+	$(CC) socialproc.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -d SPEEDTEST -obj Debug -d _DEBUG
 
 Debug\sub_btncmd.obj: sub_btncmd.c Badge.h ext_chiptunesong.h BadgeCheckoutCode.Debug.__f
-	$(CC) sub_btncmd.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -obj Debug -d _DEBUG
+	$(CC) sub_btncmd.c -t PIC18F67J11  -idx 2 -W2 -d ROOTBADGE -d SPEEDTEST -obj Debug -d _DEBUG
 
 LD = "C:\Program Files\SourceBoost\boostlink_pic.exe"
 
